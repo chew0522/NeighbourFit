@@ -1,0 +1,22 @@
+[
+  { "id": "ch_steps", "kind": "steps", "title": "10,000 Steps Community Challenge", "unit": "steps", "quickAmount": 10000,
+    "target": 500000, "seedProgress": 387000,
+    "startsOffset": { "days": -10, "time": "00:00" }, "endsOffset": { "days": 20, "time": "23:59" },
+    "reward": "Free community yoga session" },
+  { "id": "ch_walk", "kind": "walk", "title": "Weekend Walking Challenge", "unit": "km", "quickAmount": 5,
+    "target": 600, "seedProgress": 540,
+    "startsOffset": { "days": -14, "time": "00:00" }, "endsOffset": { "days": 9, "time": "23:59" },
+    "reward": "Community breakfast picnic with local café partners" },
+  { "id": "ch_cycle", "kind": "cycle", "title": "Neighbourhood Cycling Challenge", "unit": "km", "quickAmount": 15,
+    "target": 1500, "seedProgress": 880,
+    "startsOffset": { "days": -8, "time": "00:00" }, "endsOffset": { "days": 12, "time": "23:59" },
+    "reward": "Free bike service day with a local bike shop" },
+  { "id": "ch_minutes", "kind": "time", "title": "30 Active Minutes a Day", "unit": "minutes", "quickAmount": 30,
+    "target": 20000, "seedProgress": 9400,
+    "startsOffset": { "days": -5, "time": "00:00" }, "endsOffset": { "days": 25, "time": "23:59" },
+    "reward": "50 native trees planted in the community park" },
+  { "id": "ch_swim", "kind": "swim", "title": "Splash Together Pool Challenge", "unit": "laps", "quickAmount": 20,
+    "target": 2000, "seedProgress": 700,
+    "startsOffset": { "days": -3, "time": "00:00" }, "endsOffset": { "days": 30, "time": "23:59" },
+    "reward": "Free family pool day at the clubhouse" }
+]

@@ -1,0 +1,8 @@
+[
+  { "id": "v_coffee", "merchant": "Kopi Taman Café", "title": "Free coffee", "pointsCost": 150 },
+  { "id": "v_pharmacy", "merchant": "Sihat Pharmacy", "title": "RM5 off vitamins", "pointsCost": 120 },
+  { "id": "v_sports", "merchant": "Lakeside Sports Shop", "title": "10% off running gear", "pointsCost": 200 },
+  { "id": "v_juice", "merchant": "Fresh Press Juice Bar", "title": "Free green smoothie", "pointsCost": 180 },
+  { "id": "v_yoga", "merchant": "Hillcrest Yoga Studio", "title": "Free trial class", "pointsCost": 250 },
+  { "id": "v_bakery", "merchant": "Roti Sihat Bakery", "title": "Free wholemeal bun", "pointsCost": 100 }
+]

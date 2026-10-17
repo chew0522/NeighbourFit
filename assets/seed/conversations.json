@@ -1,0 +1,43 @@
+[
+  { "id": "conv_g_p_m1", "type": "group", "memberIds": ["u_aiman", "u_wei"], "sourcePostId": "p_m1", "title": "Easy morning run", "status": "active",
+    "messages": [
+      { "senderId": "u_aiman", "text": "Aiman started this meetup", "isSystem": true, "agoMinutes": 1200 },
+      { "senderId": "u_aiman", "text": "I will wait near the track entrance. Look for the green cap.", "agoMinutes": 900 },
+      { "senderId": "u_wei", "text": "Count me in. I will bring extra water.", "agoMinutes": 700 }
+    ] },
+  { "id": "conv_g_p_m2", "type": "group", "memberIds": ["u_siti", "u_nurul", "u_zainab"], "sourcePostId": "p_m2", "title": "Stroller-friendly brisk walk", "status": "active",
+    "messages": [
+      { "senderId": "u_siti", "text": "Pn. Siti started this meetup", "isSystem": true, "agoMinutes": 1800 },
+      { "senderId": "u_siti", "text": "The loop is fully step-free. There are benches near the playground.", "agoMinutes": 1500 },
+      { "senderId": "u_nurul", "text": "Great, see you there!", "agoMinutes": 1400 }
+    ] },
+  { "id": "conv_g_p_m5", "type": "group", "memberIds": ["u_farah", "u_wei", "u_sarah", "u_priya", "u_aiman"], "sourcePostId": "p_m5", "title": "Saturday lakeside jog", "status": "active",
+    "messages": [
+      { "senderId": "u_farah", "text": "Farah started this meetup", "isSystem": true, "agoMinutes": 2400 },
+      { "senderId": "u_farah", "text": "Easy pace for everyone. We walk if anyone needs a break.", "agoMinutes": 2000 },
+      { "senderId": "u_sarah", "text": "Perfect, I am coming back from a break too.", "agoMinutes": 1900 },
+      { "senderId": "u_aiman", "text": "Still going if it rains?", "agoMinutes": 800 },
+      { "senderId": "u_farah", "text": "Yes, unless there is thunder.", "agoMinutes": 700 }
+    ] },
+  { "id": "conv_g_p_m6", "type": "group", "memberIds": ["u_raj", "u_lim", "u_mei"], "sourcePostId": "p_m6", "title": "Slow walk and kopi", "status": "active",
+    "messages": [
+      { "senderId": "u_raj", "text": "Uncle Raj started this meetup", "isSystem": true, "agoMinutes": 3000 },
+      { "senderId": "u_raj", "text": "We stop at every bench, no rush at all.", "agoMinutes": 2600 }
+    ] },
+  { "id": "conv_dm_1", "type": "dm", "memberIds": ["u_meiling", "u_farah"], "sourcePostId": null, "title": null, "status": "active",
+    "messages": [
+      { "senderId": "u_farah", "text": "Hi Mei Ling! Welcome to Lakeside. We run on Saturdays if you want to join.", "agoMinutes": 300 },
+      { "senderId": "u_meiling", "text": "Thank you! I am a beginner, is that okay?", "agoMinutes": 280 },
+      { "senderId": "u_farah", "text": "Of course. Most of us are.", "agoMinutes": 270 }
+    ] },
+  { "id": "conv_dm_2", "type": "dm", "memberIds": ["u_siti", "u_nurul"], "sourcePostId": null, "title": null, "status": "active",
+    "messages": [
+      { "senderId": "u_nurul", "text": "Pn. Siti, can I join your walk with a buddy friend?", "agoMinutes": 500 },
+      { "senderId": "u_siti", "text": "Yes, please bring her along.", "agoMinutes": 480 }
+    ] },
+  { "id": "conv_dm_3", "type": "dm", "memberIds": ["u_raj", "u_lim"], "sourcePostId": null, "title": null, "status": "active",
+    "messages": [
+      { "senderId": "u_lim", "text": "Uncle Raj, is the park path flat?", "agoMinutes": 700 },
+      { "senderId": "u_raj", "text": "Very flat, with benches. You will like it.", "agoMinutes": 650 }
+    ] }
+]

@@ -1,0 +1,26 @@
+{
+  "residentCodes": ["NF-2026", "NF-LAKESIDE", "NF-PARKVIEW", "NF-HILLCREST"],
+  "communities": [
+    { "id": "c_lakeside", "name": "Lakeside Residences", "scale": 1.0, "lat": 3.1000, "lng": 101.6000 },
+    { "id": "c_parkview", "name": "Parkview Village", "scale": 0.8, "lat": 3.1080, "lng": 101.6090 },
+    { "id": "c_hillcrest", "name": "Hillcrest Gardens", "scale": 0.6, "lat": 3.0930, "lng": 101.6120 }
+  ],
+  "locations": [
+    { "id": "loc_lakeside_park", "name": "Lakeside Park entrance", "communityId": "c_lakeside", "lat": 3.1005, "lng": 101.6003,
+      "accessibilityNotes": "Step-free path, benches, shade" },
+    { "id": "loc_lakeside_track", "name": "Lakeside jogging track", "communityId": "c_lakeside", "lat": 3.1020, "lng": 101.5985,
+      "accessibilityNotes": "Paved loop, some shade" },
+    { "id": "loc_lakeside_clubhouse", "name": "Lakeside Clubhouse lawn", "communityId": "c_lakeside", "lat": 3.0996, "lng": 101.6008,
+      "accessibilityNotes": "Step-free, toilets, seating" },
+    { "id": "loc_parkview_field", "name": "Parkview Field", "communityId": "c_parkview", "lat": 3.1078, "lng": 101.6088,
+      "accessibilityNotes": "Step-free path, benches, shade, toilets nearby" },
+    { "id": "loc_parkview_court", "name": "Parkview Badminton Court", "communityId": "c_parkview", "lat": 3.1082, "lng": 101.6095,
+      "accessibilityNotes": "Indoor court, lift access" },
+    { "id": "loc_parkview_playground", "name": "Parkview Playground loop", "communityId": "c_parkview", "lat": 3.1070, "lng": 101.6080,
+      "accessibilityNotes": "Stroller-friendly loop, benches" },
+    { "id": "loc_hillcrest_park", "name": "Hillcrest Community Park", "communityId": "c_hillcrest", "lat": 3.0928, "lng": 101.6122,
+      "accessibilityNotes": "Benches every 100 m, shade, toilets" },
+    { "id": "loc_hillcrest_loop", "name": "Hillcrest Cycling Loop", "communityId": "c_hillcrest", "lat": 3.0935, "lng": 101.6130,
+      "accessibilityNotes": "Sealed road, gentle slopes" }
+  ]
+}

@@ -1,0 +1,6 @@
+[
+  { "id": "loan_1", "postId": "p_e4", "ownerId": "u_siti", "borrowerId": "u_nurul", "status": "pickedUp",
+    "requestedAgoHours": 72, "approvedAt": null, "pickedUpAt": null, "returnedAt": null },
+  { "id": "loan_2", "postId": "p_e2", "ownerId": "u_jason", "borrowerId": "u_ben", "status": "requested",
+    "requestedAgoHours": 3, "approvedAt": null, "pickedUpAt": null, "returnedAt": null }
+]
