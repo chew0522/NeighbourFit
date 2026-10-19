@@ -51,7 +51,6 @@ class ProfileScreen extends ConsumerWidget {
           row('Level', me.level.label, field: 'level'),
           row('Usual times', me.timeSlots.map((t) => t.label).join(', '), field: 'timeSlots'),
           row('Languages', me.languages.map((l) => languageLabels[l] ?? l).join(', ')),
-          row('Accessibility support', me.needsAccessibility ? 'Yes' : 'No'),
           row('Prefers similar age', me.agePref == 'same' ? 'Yes' : 'No'),
           if (me.emergencyContactName != null)
             row('Emergency contact', me.emergencyContactName!),

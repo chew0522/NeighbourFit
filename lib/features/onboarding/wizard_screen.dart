@@ -11,12 +11,22 @@ import '../../state/core_providers.dart';
 import '../../widgets/date_time_field.dart';
 import '../../widgets/ui_helpers.dart';
 
+/// Email and password chosen on the sign-up page, saved when the profile is
+/// finished.
+class SignupCredentials {
+  const SignupCredentials({required this.email, required this.password});
+
+  final String email;
+  final String password;
+}
+
 /// Short multi-step profile wizard. Used to create a profile and, with
 /// [editing], to change it later from Me > Profile.
 class WizardScreen extends ConsumerStatefulWidget {
-  const WizardScreen({super.key, this.editing});
+  const WizardScreen({super.key, this.editing, this.credentials});
 
   final UserProfile? editing;
+  final SignupCredentials? credentials;
 
   @override
   ConsumerState<WizardScreen> createState() => _WizardScreenState();
@@ -28,18 +38,16 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
 
   final _nickname = TextEditingController();
   final _emergency = TextEditingController();
-  int _avatar = avatarColors.first;
+  int? _avatar;
   AgeGroup? _age;
-  int? _birthYear;
   String? _community;
   final Set<Sport> _sports = {};
-  Level _level = Level.beginner;
+  Level? _level;
   final Set<TimeSlot> _slots = {};
-  final Set<String> _langs = {'en'};
-  bool _needsAccess = false;
-  Gender _gender = Gender.undisclosed;
-  String _agePref = 'any';
-  String _genderPref = 'any';
+  final Set<String> _langs = {};
+  Gender? _gender;
+  String? _agePref;
+  String _genderPref = 'any'; // not asked in this version
   String? _error;
 
   bool get _editing => widget.editing != null;
@@ -60,7 +68,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       _langs
         ..clear()
         ..addAll(e.languages);
-      _needsAccess = e.needsAccessibility;
       _gender = e.gender;
       _agePref = e.agePref;
       _genderPref = e.genderPref;
@@ -78,21 +85,21 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     switch (_step) {
       case 0:
         if (_nickname.text.trim().isEmpty) return 'Please enter a nickname.';
+        if (_avatar == null) return 'Please pick an avatar colour.';
         if (_age == null) return 'Please choose your age group.';
-        if (!_editing) {
-          if (_birthYear == null) return 'Please choose your birth year.';
-          if (DateTime.now().year - _birthYear! < 18) {
-            return 'NeighbourFit is for residents aged 18 and over.';
-          }
-        }
         if (_community == null) return 'Please choose your community.';
         return null;
       case 1:
         if (_sports.isEmpty) return 'Pick at least one sport.';
+        if (_level == null) return 'Please choose your level.';
         return null;
       case 2:
         if (_slots.isEmpty) return 'Pick at least one time.';
         if (_langs.isEmpty) return 'Pick at least one language.';
+        return null;
+      case 3:
+        if (_gender == null) return 'Please choose an option for gender.';
+        if (_agePref == null) return 'Please choose your age preference.';
         return null;
     }
     return null;
@@ -118,16 +125,15 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
         widget.editing!.id,
         (u) => u.copyWith(
           nickname: _nickname.text.trim(),
-          avatarColor: _avatar,
+          avatarColor: _avatar!,
           ageGroup: _age,
-          gender: _gender,
+          gender: _gender!,
           languages: _langs.toList(),
           communityId: _community,
           sports: _sports.toList(),
-          level: _level,
+          level: _level!,
           timeSlots: _slots.toList(),
-          needsAccessibility: _needsAccess,
-          agePref: _agePref,
+          agePref: _agePref!,
           genderPref: _genderPref,
           emergencyContactName: emergency.isEmpty ? null : emergency,
           clearEmergencyContact: emergency.isEmpty,
@@ -140,21 +146,26 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     final u = UserProfile(
       id: newId('u_'),
       nickname: _nickname.text.trim(),
-      avatarColor: _avatar,
+      avatarColor: _avatar!,
       ageGroup: _age!,
-      gender: _gender,
+      gender: _gender!,
       languages: _langs.toList(),
       communityId: _community!,
       sports: _sports.toList(),
-      level: _level,
+      level: _level!,
       timeSlots: _slots.toList(),
-      needsAccessibility: _needsAccess,
-      agePref: _agePref,
+      agePref: _agePref!,
       genderPref: _genderPref,
       emergencyContactName: emergency.isEmpty ? null : emergency,
       createdAt: DateTime.now(),
     );
     await users.upsert(u);
+    final cred = widget.credentials;
+    if (cred != null) {
+      await ref
+          .read(authRepoProvider)
+          .register(email: cred.email, password: cred.password, userId: u.id);
+    }
     await ref.read(sessionProvider.notifier).signIn(u.id);
     if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
   }
@@ -197,8 +208,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                       }),
                       child: const Text('Back'),
                     ),
-                  if (_step == 3)
-                    TextButton(onPressed: _next, child: const Text('Skip')),
                   const Spacer(),
                   FilledButton(
                     onPressed: last ? _finish : _next,
@@ -240,7 +249,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       );
 
   Widget _about() {
-    final year = DateTime.now().year;
     final communities = ref.read(referenceProvider).communities;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,6 +263,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
           children: [
             for (final c in avatarColors)
               GestureDetector(
+                key: ValueKey('avatar_$c'),
                 onTap: () => setState(() => _avatar = c),
                 child: Container(
                   width: 44,
@@ -282,21 +291,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
               ),
           ],
         ),
-        if (!_editing) ...[
-          const FieldLabel('Birth year'),
-          DropdownButtonFormField<int>(
-            initialValue: _birthYear,
-            hint: const Text('Choose your birth year'),
-            items: [
-              for (var y = year - 18; y >= year - 100; y--)
-                DropdownMenuItem(value: y, child: Text('$y')),
-            ],
-            onChanged: (v) => setState(() => _birthYear = v),
-          ),
-          const SizedBox(height: 4),
-          const Text('Used once to confirm you are 18 or over, then discarded.',
-              style: TextStyle(color: kMuted, fontSize: 14)),
-        ],
+        const SizedBox(height: 6),
+        const Text('NeighbourFit is for residents aged 18 and over.',
+            style: TextStyle(color: kMuted, fontSize: 14)),
         const FieldLabel('Community'),
         Wrap(
           spacing: 8,
@@ -382,14 +379,7 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   Widget _optional() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _title('A few optional things', 'You can skip this and change it later.'),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('I need accessibility support'),
-            subtitle: const Text('We will only suggest step-free, easy-going activities.'),
-            value: _needsAccess,
-            onChanged: (v) => setState(() => _needsAccess = v),
-          ),
+          _title('A few more things', 'Choose one in each row. Only the emergency contact is optional.'),
           const FieldLabel('Gender'),
           Wrap(
             spacing: 8,
@@ -402,14 +392,23 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                 ),
             ],
           ),
-          const FieldLabel('Match preferences'),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Prefer neighbours of a similar age'),
-            value: _agePref == 'same',
-            onChanged: (v) => setState(() => _agePref = v ? 'same' : 'any'),
+          const FieldLabel('Neighbours you would like to meet'),
+          Wrap(
+            spacing: 8,
+            children: [
+              ChoiceChip(
+                label: const Text('Similar age'),
+                selected: _agePref == 'same',
+                onSelected: (_) => setState(() => _agePref = 'same'),
+              ),
+              ChoiceChip(
+                label: const Text('Any age'),
+                selected: _agePref == 'any',
+                onSelected: (_) => setState(() => _agePref = 'any'),
+              ),
+            ],
           ),
-          const FieldLabel('Emergency contact (name only)'),
+          const FieldLabel('Emergency contact (name only, optional)'),
           TextField(
             controller: _emergency,
             textCapitalization: TextCapitalization.words,
@@ -459,7 +458,7 @@ class _Dots extends StatelessWidget {
                 height: 10,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  color: i <= active ? kPrimary : const Color(0xFFD1D5DB),
+                  color: i <= active ? kPrimary : kBorder,
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),

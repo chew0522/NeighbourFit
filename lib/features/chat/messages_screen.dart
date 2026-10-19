@@ -39,8 +39,8 @@ class MessagesScreen extends ConsumerWidget {
                 _InboxIcon(
                   icon: Icons.favorite_rounded,
                   label: 'Cheers',
-                  color: kAccent,
-                  background: const Color(0xFFFCEFE9),
+                  color: kAccentDark,
+                  background: kAccentSoft,
                   onTap: () => go(const CheersScreen()),
                 ),
                 _InboxIcon(
@@ -53,8 +53,8 @@ class MessagesScreen extends ConsumerWidget {
                 _InboxIcon(
                   icon: Icons.mode_comment_rounded,
                   label: 'Comments',
-                  color: const Color(0xFF4F8FD6),
-                  background: const Color(0xFFE8F0FA),
+                  color: kClay,
+                  background: kClaySoft,
                   onTap: () => go(const CommentsScreen()),
                 ),
               ],

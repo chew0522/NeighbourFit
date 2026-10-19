@@ -63,7 +63,6 @@ enum TimeSlot {
 
 enum FieldVisibility {
   everyone('Everyone'),
-  community('Community'),
   onlyMe('Only me');
 
   const FieldVisibility(this.label);

@@ -41,10 +41,10 @@ void main() {
         agePref: agePref,
         visibility: vis ??
             const {
-              'ageGroup': FieldVisibility.community,
+              'ageGroup': FieldVisibility.everyone,
               'gender': FieldVisibility.onlyMe,
-              'level': FieldVisibility.community,
-              'timeSlots': FieldVisibility.community,
+              'level': FieldVisibility.everyone,
+              'timeSlots': FieldVisibility.everyone,
             },
         createdAt: now,
       );
@@ -78,8 +78,8 @@ void main() {
         vis: const {
           'ageGroup': FieldVisibility.onlyMe,
           'gender': FieldVisibility.onlyMe,
-          'level': FieldVisibility.community,
-          'timeSlots': FieldVisibility.community,
+          'level': FieldVisibility.everyone,
+          'timeSlots': FieldVisibility.everyone,
         });
     expect(matcher.scorePair(me, hidden)!.fits.containsKey('age'), isFalse);
   });

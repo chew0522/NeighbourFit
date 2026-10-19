@@ -34,12 +34,20 @@ class _DateTimeFieldState extends State<DateTimeField> {
 
   DateTime? get _combined => (_date == null || _time == null)
       ? null
-      : DateTime(_date!.year, _date!.month, _date!.day, _time!.hour, _time!.minute);
+      : DateTime(
+          _date!.year,
+          _date!.month,
+          _date!.day,
+          _time!.hour,
+          _time!.minute,
+        );
 
   void _emit() {
     final c = _combined;
     if (c != null && !c.isAfter(DateTime.now())) {
-      setState(() => _error = 'That time has already passed. Choose a later time.');
+      setState(
+        () => _error = 'That time has already passed. Choose a later time.',
+      );
       widget.onChanged(null);
       return;
     }
@@ -70,7 +78,9 @@ class _DateTimeFieldState extends State<DateTimeField> {
     if (_date != null && sameDay(_date!, now)) {
       final picked = DateTime(now.year, now.month, now.day, t.hour, t.minute);
       if (!picked.isAfter(now)) {
-        setState(() => _error = 'That time has already passed. Choose a later time.');
+        setState(
+          () => _error = 'That time has already passed. Choose a later time.',
+        );
         return;
       }
     }
@@ -97,7 +107,9 @@ class _DateTimeFieldState extends State<DateTimeField> {
               child: OutlinedButton.icon(
                 onPressed: _pickTime,
                 icon: const Icon(Icons.schedule, size: 18),
-                label: Text(_time == null ? 'Pick a time' : _time!.format(context)),
+                label: Text(
+                  _time == null ? 'Pick a time' : _time!.format(context),
+                ),
               ),
             ),
           ],
@@ -105,8 +117,10 @@ class _DateTimeFieldState extends State<DateTimeField> {
         if (_error != null)
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Text(_error!,
-                style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 14)),
+            child: Text(
+              _error!,
+              style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 14),
+            ),
           ),
       ],
     );
@@ -120,9 +134,14 @@ class FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 8),
-        child: Text(text,
-            style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w700, color: kText)),
-      );
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: kText,
+      ),
+    ),
+  );
 }

@@ -68,6 +68,7 @@ class Post {
     this.comments = const [],
     this.nextTimeBy = const [],
     this.homeSafeIds = const [],
+    this.photoPath,
     required this.createdAt,
   });
 
@@ -94,6 +95,10 @@ class Post {
   /// Sport shares only. Visible to the poster only.
   final List<NextTime> nextTimeBy;
   final List<String> homeSafeIds;
+
+  /// Optional photo. Either an asset under `post_pic/` (seed data) or a file
+  /// saved on this device.
+  final String? photoPath;
   final DateTime createdAt;
 
   bool get isMeetup => type == PostType.meetup;
@@ -127,6 +132,7 @@ class Post {
         comments: comments ?? this.comments,
         nextTimeBy: nextTimeBy ?? this.nextTimeBy,
         homeSafeIds: homeSafeIds ?? this.homeSafeIds,
+        photoPath: photoPath,
         createdAt: createdAt,
       );
 
@@ -150,6 +156,7 @@ class Post {
         'comments': comments.map((e) => e.toJson()).toList(),
         'nextTimeBy': nextTimeBy.map((e) => e.toJson()).toList(),
         'homeSafeIds': homeSafeIds,
+        'photoPath': photoPath,
         'createdAt': createdAt.toIso8601String(),
       };
 
@@ -173,6 +180,7 @@ class Post {
         comments: mapList(j['comments']).map(Comment.fromJson).toList(),
         nextTimeBy: mapList(j['nextTimeBy']).map(NextTime.fromJson).toList(),
         homeSafeIds: strList(j['homeSafeIds']),
+        photoPath: j['photoPath'] as String?,
         createdAt: parseDt(j['createdAt']),
       );
 }

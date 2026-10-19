@@ -8,6 +8,7 @@ import '../../core/utils/ids.dart';
 import '../../state/app_state.dart';
 import '../../state/core_providers.dart';
 import '../../widgets/date_time_field.dart';
+import '../../widgets/photo_field.dart';
 import '../../widgets/tags.dart';
 import '../../widgets/ui_helpers.dart';
 
@@ -76,37 +77,33 @@ class SportChips extends StatelessWidget {
       );
 }
 
+/// Body of a create form: scrolling fields and a Post button. The page that
+/// hosts it (CreateScreen) provides the app bar and the mode strip.
 class _FormShell extends StatelessWidget {
-  const _FormShell({required this.title, required this.children, required this.onSubmit, this.submitLabel = 'Post'});
+  const _FormShell({required this.children, required this.onSubmit, this.submitLabel = 'Post'});
 
-  final String title;
   final List<Widget> children;
   final VoidCallback? onSubmit;
   final String submitLabel;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                children: children,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(onPressed: onSubmit, child: Text(submitLabel)),
-              ),
-            ),
-          ],
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            children: children,
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton(onPressed: onSubmit, child: Text(submitLabel)),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -124,6 +121,7 @@ class _WorkoutFormState extends ConsumerState<WorkoutForm> with ComposeHelpers {
   final _text = TextEditingController();
   Sport? _sport;
   String? _place;
+  String? _photo;
 
   @override
   void dispose() {
@@ -144,15 +142,16 @@ class _WorkoutFormState extends ConsumerState<WorkoutForm> with ComposeHelpers {
       sport: _sport,
       locationId: _place,
       text: _text.text.trim(),
+      photoPath: _photo,
       createdAt: DateTime.now(),
     ));
   }
 
   @override
   Widget build(BuildContext context) => _FormShell(
-        title: 'Share a workout',
         onSubmit: _submit,
         children: [
+          PhotoField(path: _photo, onChanged: (v) => setState(() => _photo = v)),
           const FieldLabel('What did you do?'),
           SportChips(value: _sport, onChanged: (s) => setState(() => _sport = s)),
           const FieldLabel('Where?'),
@@ -179,6 +178,7 @@ class MealForm extends ConsumerStatefulWidget {
 
 class _MealFormState extends ConsumerState<MealForm> with ComposeHelpers {
   final _text = TextEditingController();
+  String? _photo;
 
   @override
   void dispose() {
@@ -196,15 +196,16 @@ class _MealFormState extends ConsumerState<MealForm> with ComposeHelpers {
       authorId: me.id,
       communityId: me.communityId,
       text: _text.text.trim(),
+      photoPath: _photo,
       createdAt: DateTime.now(),
     ));
   }
 
   @override
   Widget build(BuildContext context) => _FormShell(
-        title: 'Share a healthy meal',
         onSubmit: _submit,
         children: [
+          PhotoField(path: _photo, onChanged: (v) => setState(() => _photo = v)),
           const FieldLabel('What did you eat?'),
           TextField(
             controller: _text,
@@ -232,6 +233,7 @@ class EquipmentForm extends ConsumerStatefulWidget {
 class _EquipmentFormState extends ConsumerState<EquipmentForm> with ComposeHelpers {
   final _item = TextEditingController();
   final _text = TextEditingController();
+  String? _photo;
 
   @override
   void dispose() {
@@ -252,6 +254,7 @@ class _EquipmentFormState extends ConsumerState<EquipmentForm> with ComposeHelpe
         communityId: me.communityId,
         equipmentItem: _item.text.trim(),
         text: _text.text.trim(),
+        photoPath: _photo,
         createdAt: DateTime.now(),
       ),
       message: 'Listed. Neighbours can now ask to borrow it.',
@@ -260,10 +263,10 @@ class _EquipmentFormState extends ConsumerState<EquipmentForm> with ComposeHelpe
 
   @override
   Widget build(BuildContext context) => _FormShell(
-        title: 'Lend equipment',
         onSubmit: _submit,
         submitLabel: 'List it',
         children: [
+          PhotoField(path: _photo, onChanged: (v) => setState(() => _photo = v)),
           const FieldLabel('What can neighbours borrow?'),
           TextField(
             controller: _item,

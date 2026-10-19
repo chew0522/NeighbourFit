@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../config/app_theme.dart';
 import '../challenges/challenges_screen.dart';
 import '../chat/messages_screen.dart';
-import '../compose/compose_sheet.dart';
+import '../compose/create_screen.dart';
 import '../feed/feed_screen.dart';
 import '../profile/me_screen.dart';
 import 'app_drawer.dart';
@@ -95,7 +95,7 @@ class _HomeShellState extends State<HomeShell> {
                     label: 'Create a post',
                     button: true,
                     child: GestureDetector(
-                      onTap: () => showComposeSheet(context),
+                      onTap: () => openCreate(context),
                       child: Container(
                         width: 70,
                         height: 70,

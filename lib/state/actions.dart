@@ -43,6 +43,13 @@ class AppActions {
             ),
           );
       awarded = true;
+      await _ref.read(pointsProvider.notifier).add(
+            userId: me.id,
+            delta: joinPoints,
+            label: 'Joined: ${fresh.title ?? 'a meetup'}',
+            refType: 'join',
+            refId: post.id,
+          );
     }
     showSnack(
       "You're in${awarded ? ' (+$joinPoints points)' : ''}",
@@ -59,6 +66,7 @@ class AppActions {
         .read(chatProvider.notifier)
         .removeMember(post.id, me, announce: false);
     if (awarded) {
+      await _ref.read(pointsProvider.notifier).removeRef(me.id, 'join', post.id);
       await _ref.read(usersProvider.notifier).update(
             me.id,
             (u) => u.copyWith(

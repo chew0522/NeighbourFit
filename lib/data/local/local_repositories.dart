@@ -1,6 +1,7 @@
 import '../../core/models/challenge.dart';
 import '../../core/models/conversation.dart';
 import '../../core/models/equipment_loan.dart';
+import '../../core/models/points_entry.dart';
 import '../../core/models/post.dart';
 import '../../core/models/recommendation_log.dart';
 import '../../core/models/reference_models.dart';
@@ -17,8 +18,10 @@ class StoreKeys {
   static const loans = 'nf_loans';
   static const logs = 'nf_logs';
   static const session = 'nf_session_user';
+  static const points = 'nf_points';
+  static const auth = 'nf_auth';
   static const seedVersion = 'nf_seed_version';
-  static const all = [users, posts, conversations, challenges, loans, logs];
+  static const all = [users, posts, conversations, challenges, loans, logs, points, auth];
 }
 
 class LocalRepository<T> implements Repository<T> {
@@ -66,6 +69,12 @@ class LocalEquipmentLoanRepository extends LocalRepository<EquipmentLoan>
     implements EquipmentLoanRepository {
   LocalEquipmentLoanRepository(LocalStore s)
       : super(s, StoreKeys.loans, EquipmentLoan.fromJson, (e) => e.toJson());
+}
+
+class LocalPointsRepository extends LocalRepository<PointsEntry>
+    implements PointsRepository {
+  LocalPointsRepository(LocalStore s)
+      : super(s, StoreKeys.points, PointsEntry.fromJson, (e) => e.toJson());
 }
 
 class LocalRecommendationLogRepository extends LocalRepository<RecommendationLog>

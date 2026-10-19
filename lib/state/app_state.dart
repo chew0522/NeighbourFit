@@ -6,6 +6,7 @@ import '../core/models/challenge.dart';
 import '../core/models/conversation.dart';
 import '../core/models/enums.dart';
 import '../core/models/equipment_loan.dart';
+import '../core/models/points_entry.dart';
 import '../core/models/post.dart';
 import '../core/models/recommendation_log.dart';
 import '../core/models/reference_models.dart';
@@ -102,6 +103,13 @@ class UsersNotifier extends Notifier<List<UserProfile>> {
         ],
       ),
     );
+    await ref.read(pointsProvider.notifier).add(
+          userId: userId,
+          delta: -v.pointsCost,
+          label: 'Redeemed: ${v.title}',
+          refType: 'redeem',
+          refId: v.id,
+        );
     return code;
   }
 }
@@ -438,6 +446,13 @@ class ChallengesNotifier extends Notifier<List<Challenge>> {
       ),
     );
     await ref.read(usersProvider.notifier).addPoints(userId, 10);
+    await ref.read(pointsProvider.notifier).add(
+          userId: userId,
+          delta: 10,
+          label: 'Check-in: ${c.title}',
+          refType: 'checkin',
+          refId: id,
+        );
     return true;
   }
 
@@ -532,6 +547,54 @@ class LoansNotifier extends Notifier<List<EquipmentLoan>> {
 
 final loansProvider =
     NotifierProvider<LoansNotifier, List<EquipmentLoan>>(LoansNotifier.new);
+
+// ----------------------------------------------------------------- points
+
+class PointsNotifier extends Notifier<List<PointsEntry>> {
+  @override
+  List<PointsEntry> build() => ref.read(pointsRepoProvider).load();
+
+  Future<void> _save(List<PointsEntry> next) async {
+    state = next;
+    await ref.read(pointsRepoProvider).save(next);
+  }
+
+  Future<void> add({
+    required String userId,
+    required int delta,
+    required String label,
+    String? refType,
+    String? refId,
+  }) =>
+      _save([
+        ...state,
+        PointsEntry(
+          id: newId('pt_'),
+          userId: userId,
+          delta: delta,
+          label: label,
+          at: DateTime.now(),
+          refType: refType,
+          refId: refId,
+        ),
+      ]);
+
+  /// Removes entries made for one thing, for example when a join is undone.
+  Future<void> removeRef(String userId, String refType, String refId) => _save(
+      state.where((e) => !(e.userId == userId && e.refType == refType && e.refId == refId)).toList());
+}
+
+final pointsProvider =
+    NotifierProvider<PointsNotifier, List<PointsEntry>>(PointsNotifier.new);
+
+/// The current user's points history, newest first.
+final myPointsHistoryProvider = Provider<List<PointsEntry>>((ref) {
+  final me = ref.watch(currentUserProvider);
+  if (me == null) return const [];
+  final list = ref.watch(pointsProvider).where((e) => e.userId == me.id).toList()
+    ..sort((a, b) => b.at.compareTo(a.at));
+  return list;
+});
 
 // ------------------------------------------------------------------- logs
 
@@ -652,6 +715,7 @@ void invalidateAllData(Ref ref) {
   ref.invalidate(challengesProvider);
   ref.invalidate(loansProvider);
   ref.invalidate(logsProvider);
+  ref.invalidate(pointsProvider);
   ref.invalidate(feedFilterProvider);
   ref.invalidate(feedWindowProvider);
 }

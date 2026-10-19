@@ -244,7 +244,7 @@ class MatchingEngine {
         if (!weekendDates.any((w) => sameDay(w, start))) continue;
       }
       if (q.timeSlot != null && !slotsFor(start).contains(q.timeSlot)) continue;
-      if ((q.needsAccessibility || me.needsAccessibility) &&
+      if (q.needsAccessibility &&
           !p.accessibilityFriendly) {
         continue;
       }

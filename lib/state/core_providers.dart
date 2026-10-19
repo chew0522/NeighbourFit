@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../config/ai_config.dart';
 import '../config/matching_config.dart';
 import '../core/models/reference_models.dart';
+import '../data/local/auth_repository.dart';
 import '../data/local/local_repositories.dart';
 import '../data/local/local_store.dart';
 import '../data/repositories/repositories.dart';
@@ -37,12 +38,17 @@ final challengeRepoProvider = Provider<ChallengeRepository>(
     (ref) => LocalChallengeRepository(ref.watch(storeProvider)));
 final loanRepoProvider = Provider<EquipmentLoanRepository>(
     (ref) => LocalEquipmentLoanRepository(ref.watch(storeProvider)));
+final pointsRepoProvider = Provider<PointsRepository>(
+    (ref) => LocalPointsRepository(ref.watch(storeProvider)));
 final logRepoProvider = Provider<RecommendationLogRepository>(
     (ref) => LocalRecommendationLogRepository(ref.watch(storeProvider)));
 final locationRepoProvider = Provider<LocationRepository>(
     (ref) => AssetLocationRepository(ref.watch(referenceProvider)));
 final rewardRepoProvider = Provider<RewardRepository>(
     (ref) => AssetRewardRepository(ref.watch(referenceProvider)));
+
+final authRepoProvider =
+    Provider<AuthRepository>((ref) => AuthRepository(ref.watch(storeProvider)));
 
 final aiServiceProvider =
     Provider<AiService>((ref) => AiService(ref.watch(aiConfigProvider)));

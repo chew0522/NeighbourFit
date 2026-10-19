@@ -58,9 +58,14 @@ class TypeLabel extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: kPrimary),
         const SizedBox(width: 4),
-        Text(label,
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, color: kPrimary)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: kPrimary,
+          ),
+        ),
       ],
     );
   }
@@ -86,8 +91,14 @@ class InfoTag extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: kPrimary),
           const SizedBox(width: 4),
-          Text(label,
-              style: const TextStyle(fontSize: 12, color: kText, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: kText,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

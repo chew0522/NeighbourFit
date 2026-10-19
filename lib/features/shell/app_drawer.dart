@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../config/app_theme.dart';
 import '../../state/app_state.dart';
 import '../../state/core_providers.dart';
+import '../../widgets/app_logo.dart';
 import '../../widgets/avatar.dart';
 import '../profile/my_equipment_screen.dart';
 import '../profile/profile_screen.dart';
@@ -76,7 +77,7 @@ class AppDrawer extends ConsumerWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('Switch account'),
+              title: const Text('Log out'),
               onTap: () async {
                 Navigator.of(context).pop();
                 await ref.read(sessionProvider.notifier).signOut();
@@ -84,8 +85,14 @@ class AppDrawer extends ConsumerWidget {
             ),
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: Text('NeighbourFit · prototype',
-                  style: TextStyle(color: kMuted, fontSize: 12)),
+              child: Row(
+                children: [
+                  AppLogo(size: 32),
+                  SizedBox(width: 10),
+                  Text('NeighbourFit · prototype',
+                      style: TextStyle(color: kMuted, fontSize: 13)),
+                ],
+              ),
             ),
           ],
         ),

@@ -8,6 +8,7 @@ import '../../core/utils/ids.dart';
 import '../../core/utils/time_utils.dart';
 import '../../state/app_state.dart';
 import '../../widgets/date_time_field.dart';
+import '../../widgets/photo_field.dart';
 import '../../widgets/ui_helpers.dart';
 import 'compose_forms.dart';
 
@@ -30,6 +31,7 @@ class _MeetupFormState extends ConsumerState<MeetupForm> with ComposeHelpers {
   Level? _level;
   bool _safeBuddy = false;
   bool _accessible = false;
+  String? _photo;
 
   @override
   void dispose() {
@@ -69,6 +71,7 @@ class _MeetupFormState extends ConsumerState<MeetupForm> with ComposeHelpers {
       level: _level,
       accessibilityFriendly: _accessible,
       safeBuddy: _safeBuddy,
+      photoPath: _photo,
       capacity: cap,
       memberIds: [me.id],
       createdAt: DateTime.now(),
@@ -79,10 +82,7 @@ class _MeetupFormState extends ConsumerState<MeetupForm> with ComposeHelpers {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Start a meetup')),
-      body: SafeArea(
-        child: Column(
+    return Column(
           children: [
             Expanded(
               child: ListView(
@@ -90,6 +90,7 @@ class _MeetupFormState extends ConsumerState<MeetupForm> with ComposeHelpers {
                 children: [
                   const Text('Want company? Tell your neighbours when and where.',
                       style: TextStyle(fontSize: 17, color: kMuted)),
+                  PhotoField(path: _photo, onChanged: (v) => setState(() => _photo = v)),
                   const FieldLabel('Sport'),
                   SportChips(value: _sport, onChanged: (s) => setState(() => _sport = s)),
                   const FieldLabel('When'),
@@ -167,15 +168,13 @@ class _MeetupFormState extends ConsumerState<MeetupForm> with ComposeHelpers {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton(onPressed: _submit, child: const Text('Post meetup')),
               ),
             ),
           ],
-        ),
-      ),
     );
   }
 }

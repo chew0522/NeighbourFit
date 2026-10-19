@@ -111,7 +111,7 @@ class UserProfileScreen extends ConsumerWidget {
                 TabBar(
                   labelColor: kText,
                   unselectedLabelColor: kMuted,
-                  indicatorColor: kAccent,
+                  indicatorColor: kPrimary,
                   indicatorWeight: 3,
                   labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                   tabs: [
@@ -171,8 +171,6 @@ class _Header extends ConsumerWidget {
           InfoTag(icon: Icons.schedule, label: t.label),
       for (final l in user.languages)
         InfoTag(icon: Icons.translate, label: languageLabels[l] ?? l),
-      if (user.needsAccessibility)
-        const InfoTag(icon: Icons.accessible, label: 'Likes accessible routes'),
     ];
 
     return Padding(
@@ -229,9 +227,9 @@ class _Header extends ConsumerWidget {
                 children: [
                   for (final r in reasons)
                     Chip(
-                      avatar: const Icon(Icons.auto_awesome, size: 16, color: kAccent),
+                      avatar: const Icon(Icons.auto_awesome, size: 16, color: kAccentDark),
                       label: Text(r, style: const TextStyle(fontSize: 13)),
-                      backgroundColor: const Color(0xFFFCEFE9),
+                      backgroundColor: kAccentSoft,
                       side: BorderSide.none,
                       visualDensity: VisualDensity.compact,
                     ),

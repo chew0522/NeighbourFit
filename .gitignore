@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 CLAUDE.md
+DECISIONS.md
 /md
 /teammate_md
 

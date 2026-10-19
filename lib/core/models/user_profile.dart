@@ -37,15 +37,14 @@ class UserProfile {
     this.sports = const [],
     this.level = Level.beginner,
     this.timeSlots = const [],
-    this.needsAccessibility = false,
     this.agePref = 'any',
     this.genderPref = 'any',
     this.emergencyContactName,
     this.visibility = const {
-      'ageGroup': FieldVisibility.community,
+      'ageGroup': FieldVisibility.everyone,
       'gender': FieldVisibility.onlyMe,
-      'level': FieldVisibility.community,
-      'timeSlots': FieldVisibility.community,
+      'level': FieldVisibility.everyone,
+      'timeSlots': FieldVisibility.everyone,
     },
     this.blockedUserIds = const [],
     this.points = 0,
@@ -66,7 +65,6 @@ class UserProfile {
   final List<Sport> sports;
   final Level level;
   final List<TimeSlot> timeSlots;
-  final bool needsAccessibility;
 
   /// 'any' or 'same'
   final String agePref;
@@ -86,7 +84,7 @@ class UserProfile {
   final DateTime createdAt;
 
   FieldVisibility visibilityOf(String field) =>
-      visibility[field] ?? FieldVisibility.community;
+      visibility[field] ?? FieldVisibility.everyone;
 
   bool isVisible(String field) => visibilityOf(field) != FieldVisibility.onlyMe;
 
@@ -108,7 +106,6 @@ class UserProfile {
     List<Sport>? sports,
     Level? level,
     List<TimeSlot>? timeSlots,
-    bool? needsAccessibility,
     String? agePref,
     String? genderPref,
     String? emergencyContactName,
@@ -131,7 +128,6 @@ class UserProfile {
         sports: sports ?? this.sports,
         level: level ?? this.level,
         timeSlots: timeSlots ?? this.timeSlots,
-        needsAccessibility: needsAccessibility ?? this.needsAccessibility,
         agePref: agePref ?? this.agePref,
         genderPref: genderPref ?? this.genderPref,
         emergencyContactName: clearEmergencyContact
@@ -159,7 +155,6 @@ class UserProfile {
         'sports': sports.map((e) => e.name).toList(),
         'level': level.name,
         'timeSlots': timeSlots.map((e) => e.name).toList(),
-        'needsAccessibility': needsAccessibility,
         'matchPrefs': {'agePref': agePref, 'genderPref': genderPref},
         'emergencyContactName': emergencyContactName,
         'visibility': visibility.map((k, v) => MapEntry(k, v.name)),
@@ -192,14 +187,13 @@ class UserProfile {
           .map((e) => enumByName(TimeSlot.values, e))
           .whereType<TimeSlot>()
           .toList(),
-      needsAccessibility: j['needsAccessibility'] as bool? ?? false,
       agePref: prefs['agePref'] as String? ?? 'any',
       genderPref: prefs['genderPref'] as String? ?? 'any',
       emergencyContactName: j['emergencyContactName'] as String?,
       visibility: {
         for (final f in visibilityFields)
-          f: enumByName(FieldVisibility.values, vis[f]) ??
-              (f == 'gender' ? FieldVisibility.onlyMe : FieldVisibility.community),
+          f: enumByName(FieldVisibility.values, vis[f] == 'community' ? 'everyone' : vis[f]) ??
+              (f == 'gender' ? FieldVisibility.onlyMe : FieldVisibility.everyone),
       },
       blockedUserIds: strList(j['blockedUserIds']),
       points: (j['points'] as num?)?.toInt() ?? 0,

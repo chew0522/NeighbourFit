@@ -15,14 +15,56 @@ class SeedLoader {
   final LocalStore store;
   final AssetBundle bundle;
 
-  static const _version = '4';
+  static const _version = '10';
 
   Future<dynamic> _json(String name) async =>
       jsonDecode(await bundle.loadString('assets/seed/$name'));
 
   Future<void> ensureSeeded() async {
-    if (store.getString(StoreKeys.seedVersion) == _version) return;
-    await seed();
+    if (store.getString(StoreKeys.seedVersion) != _version) {
+      await seed();
+      return;
+    }
+    await syncPhotos();
+  }
+
+  /// Every file in post_pic/ belongs to the post with the same name, with "-"
+  /// standing for "_" (p-s1.jpg -> p_s1). Returns post id -> asset path.
+  Future<Map<String, String>> _photoMap() async {
+    final photos = <String, String>{};
+    try {
+      final manifest = await AssetManifest.loadFromAssetBundle(bundle);
+      for (final path in manifest.listAssets()) {
+        if (!path.startsWith('post_pic/')) continue;
+        final file = path.substring('post_pic/'.length);
+        final dot = file.lastIndexOf('.');
+        final name = (dot < 0 ? file : file.substring(0, dot)).replaceAll('-', '_').toLowerCase();
+        photos[name] = path;
+      }
+    } catch (_) {}
+    return photos;
+  }
+
+  /// Keeps seeded posts in step with the files in post_pic/ without wiping
+  /// anything: photos are added when a file exists and dropped when the file
+  /// is gone. Posts with a photo the user added themselves are left alone.
+  Future<void> syncPhotos() async {
+    final photos = await _photoMap();
+    final list = store.readList(StoreKeys.posts);
+    var changed = false;
+    for (final p in list) {
+      final id = (p['id'] as String? ?? '').toLowerCase();
+      final current = p['photoPath'] as String?;
+      final wanted = photos[id];
+      if (wanted != null && current != wanted && (current == null || current.startsWith('post_pic/'))) {
+        p['photoPath'] = wanted;
+        changed = true;
+      } else if (wanted == null && current != null && current.startsWith('post_pic/')) {
+        p['photoPath'] = null;
+        changed = true;
+      }
+    }
+    if (changed) await store.writeList(StoreKeys.posts, list);
   }
 
   /// Wipes saved data and loads fresh seed data with dates relative to now.
@@ -43,10 +85,10 @@ class SeedLoader {
     final users = <Map<String, dynamic>>[];
     for (final u in mapList(await _json('neighbours.json'))) {
       final vis = <String, dynamic>{
-        'ageGroup': 'community',
-        'gender': u['genderVisible'] == true ? 'community' : 'onlyMe',
-        'level': 'community',
-        'timeSlots': 'community',
+        'ageGroup': 'everyone',
+        'gender': u['genderVisible'] == true ? 'everyone' : 'onlyMe',
+        'level': 'everyone',
+        'timeSlots': 'everyone',
       };
       users.add({
         ...u,
@@ -55,6 +97,8 @@ class SeedLoader {
       });
     }
     final userById = {for (final u in users) u['id'] as String: u};
+
+    final photos = await _photoMap();
 
     // Posts
     final posts = <Map<String, dynamic>>[];
@@ -67,6 +111,8 @@ class SeedLoader {
             resolveOffset(asMap(m['startsAtOffset']), now).toIso8601String();
         m.remove('startsAtOffset');
       }
+      final photo = photos[(m['id'] as String).toLowerCase()];
+      if (photo != null) m['photoPath'] = photo;
       m['createdAt'] =
           ago(hours: (m['createdAgoHours'] as num?) ?? 1).toIso8601String();
       m.remove('createdAgoHours');
@@ -158,6 +204,27 @@ class SeedLoader {
       loans.add(m);
     }
 
+    // Points history that adds up to each seeded user's points.
+    final points = <Map<String, dynamic>>[];
+    for (final u in users) {
+      var left = (u['points'] as num?)?.toInt() ?? 0;
+      var i = 0;
+      while (left > 0) {
+        final delta = (left >= 20 && i.isEven) ? 20 : 10;
+        points.add({
+          'id': 'pt_${u['id']}_$i',
+          'userId': u['id'],
+          'delta': delta,
+          'label': delta == 20 ? 'Joined a meetup' : 'Challenge check-in',
+          'at': ago(hours: 12 + i * 30).toIso8601String(),
+          'refType': 'seed',
+        });
+        left -= delta;
+        i++;
+      }
+    }
+
+    await store.writeList(StoreKeys.points, points);
     await store.writeList(StoreKeys.users, users);
     await store.writeList(StoreKeys.posts, posts);
     await store.writeList(StoreKeys.challenges, challenges);

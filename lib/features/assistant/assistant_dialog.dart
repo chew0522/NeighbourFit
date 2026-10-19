@@ -185,7 +185,7 @@ class _AssistantDialogState extends ConsumerState<AssistantDialog> {
                   ),
                   const SizedBox(width: 8),
                   IconButton.filled(
-                    style: IconButton.styleFrom(backgroundColor: kAccent, foregroundColor: kText),
+                    style: IconButton.styleFrom(backgroundColor: kPrimary, foregroundColor: Colors.white),
                     onPressed: st.busy ? null : () => _ask(_input.text),
                     icon: const Icon(Icons.send),
                     tooltip: 'Send',

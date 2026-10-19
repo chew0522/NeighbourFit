@@ -41,6 +41,9 @@ dependencies:
   url_launcher: ^6.3.2
   uuid: ^4.6.0
   intl: ^0.20.3
+  crypto: ^3.0.7
+  image_picker: ^1.2.2
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +55,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -68,6 +73,8 @@ flutter:
     - .env
     - assets/seed/
     - assets/config/
+    - assets/icon/logo.png
+    - post_pic/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -99,3 +106,26 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Launcher icon (phone home screen). Regenerate with:
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "assets/icon/app_icon_background.png"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  min_sdk_android: 21
+
+# Launch screen. Regenerate with:
+#   dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#FAF6EA"
+  image: assets/icon/splash_logo.png
+  android: true
+  ios: false
+  web: false
+  android_12:
+    color: "#FAF6EA"
+    image: assets/icon/splash_logo_android12.png
+

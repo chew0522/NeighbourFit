@@ -1,6 +1,7 @@
 import '../../core/models/challenge.dart';
 import '../../core/models/conversation.dart';
 import '../../core/models/equipment_loan.dart';
+import '../../core/models/points_entry.dart';
 import '../../core/models/post.dart';
 import '../../core/models/recommendation_log.dart';
 import '../../core/models/reference_models.dart';
@@ -23,6 +24,8 @@ abstract class ChatRepository implements Repository<Conversation> {}
 abstract class ChallengeRepository implements Repository<Challenge> {}
 
 abstract class EquipmentLoanRepository implements Repository<EquipmentLoan> {}
+
+abstract class PointsRepository implements Repository<PointsEntry> {}
 
 abstract class RecommendationLogRepository
     implements Repository<RecommendationLog> {}

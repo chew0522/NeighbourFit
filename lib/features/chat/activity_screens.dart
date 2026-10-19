@@ -128,8 +128,8 @@ class CheersScreen extends ConsumerWidget {
           leading: Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(color: Color(0xFFFCEFE9), shape: BoxShape.circle),
-            child: const Icon(Icons.favorite, color: kAccent),
+            decoration: const BoxDecoration(color: kAccentSoft, shape: BoxShape.circle),
+            child: const Icon(Icons.favorite, color: kAccentDark),
           ),
           title: Text(
             '${_names([for (final id in p.cheeredBy) users.where((u) => u.id == id).firstOrNull])} cheered your ${_what(p)}',
@@ -138,7 +138,7 @@ class CheersScreen extends ConsumerWidget {
           subtitle: Text(_snippet(p),
               maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: kMuted)),
           trailing: Text('${p.cheeredBy.length}',
-              style: const TextStyle(fontWeight: FontWeight.w800, color: kAccent, fontSize: 18)),
+              style: const TextStyle(fontWeight: FontWeight.w800, color: kAccentDark, fontSize: 18)),
         ),
     ];
     return _page(

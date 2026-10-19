@@ -86,20 +86,19 @@ void main() {
       residentCodes: [],
     );
     UserProfile user(String id,
-            {Gender g = Gender.female, bool needsAcc = false}) =>
+            {Gender g = Gender.female}) =>
         UserProfile(
           id: id,
           nickname: id,
           communityId: 'c1',
           gender: g,
-          needsAccessibility: needsAcc,
           sports: const [Sport.running],
           timeSlots: const [TimeSlot.morning],
           visibility: const {
-            'ageGroup': FieldVisibility.community,
-            'gender': FieldVisibility.community,
-            'level': FieldVisibility.community,
-            'timeSlots': FieldVisibility.community,
+            'ageGroup': FieldVisibility.everyone,
+            'gender': FieldVisibility.everyone,
+            'level': FieldVisibility.everyone,
+            'timeSlots': FieldVisibility.everyone,
           },
           createdAt: now,
         );
@@ -177,15 +176,15 @@ void main() {
       expect(r.map((e) => e.post!.id), ['am']);
     });
 
-    test('accessibility need keeps only accessibility-friendly meetups', () {
-      final me = user('me', needsAcc: true);
+    test('asking for accessible meetups keeps only accessibility-friendly ones', () {
+      final me = user('me');
       final a = user('a');
       final posts = [
         meetup('plain', 'a', tomorrowMorning),
         meetup('step', 'a', tomorrowMorning, acc: true),
       ];
       final r = engine.recommend(
-          const ParsedQuery(), data(me, [me, a], posts));
+          const ParsedQuery(needsAccessibility: true), data(me, [me, a], posts));
       expect(r.map((e) => e.post!.id), ['step']);
     });
 

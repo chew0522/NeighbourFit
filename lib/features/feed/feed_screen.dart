@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../config/app_theme.dart';
 import '../../state/app_state.dart';
 import '../../widgets/ui_helpers.dart';
-import '../compose/compose_sheet.dart';
+import '../compose/create_screen.dart';
 import '../search/search_screen.dart';
 import 'post_card.dart';
 
@@ -35,8 +35,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     // after posting, the feed jumps back to For You).
     ref.listen(feedFilterProvider, (prev, next) {
       if (_pages.hasClients && (_pages.page ?? 0).round() != next.index) {
-        _pages.animateToPage(next.index,
-            duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+        _pages.animateToPage(
+          next.index,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
       }
     });
 
@@ -49,16 +52,19 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
               current: current,
               onMenu: widget.onMenu,
               onTab: (f) => ref.read(feedFilterProvider.notifier).set(f),
-              onSearch: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const SearchScreen())),
+              onSearch: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const SearchScreen())),
             ),
             Expanded(
               child: PageView(
                 controller: _pages,
-                onPageChanged: (i) =>
-                    ref.read(feedFilterProvider.notifier).set(FeedFilter.values[i]),
+                onPageChanged: (i) => ref
+                    .read(feedFilterProvider.notifier)
+                    .set(FeedFilter.values[i]),
                 children: [
-                  for (final f in FeedFilter.values) _FeedList(key: ValueKey(f), filter: f),
+                  for (final f in FeedFilter.values)
+                    _FeedList(key: ValueKey(f), filter: f),
                 ],
               ),
             ),
@@ -104,7 +110,11 @@ class _TopBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       for (final f in FeedFilter.values)
-                        _TabLabel(label: f.label, selected: f == current, onTap: () => onTab(f)),
+                        _TabLabel(
+                          label: f.label,
+                          selected: f == current,
+                          onTap: () => onTab(f),
+                        ),
                     ],
                   ),
                 ),
@@ -124,7 +134,11 @@ class _TopBar extends StatelessWidget {
 }
 
 class _TabLabel extends StatelessWidget {
-  const _TabLabel({required this.label, required this.selected, required this.onTap});
+  const _TabLabel({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final bool selected;
@@ -153,7 +167,7 @@ class _TabLabel extends StatelessWidget {
               height: 3,
               width: selected ? 26 : 0,
               decoration: BoxDecoration(
-                color: kAccent,
+                color: kPrimary,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -187,7 +201,14 @@ class _FeedList extends ConsumerWidget {
               icon: Icons.directions_walk,
               message: message,
               actionLabel: 'Start something',
-              onAction: () => showComposeSheet(context),
+              onAction: () => openCreate(
+                context,
+                initial: switch (filter) {
+                  FeedFilter.meetup => CreateMode.meetup,
+                  FeedFilter.equipment => CreateMode.equipment,
+                  FeedFilter.forYou => CreateMode.workout,
+                },
+              ),
             ),
           ),
         for (final p in feed.posts)
@@ -217,7 +238,9 @@ class _EndCard extends ConsumerWidget {
             const Icon(Icons.check_circle_outline, color: kPrimary, size: 30),
             const SizedBox(height: 8),
             Text(
-              hasOlder ? "You're all caught up. Go for a walk!" : "That's everything. Go for a walk!",
+              hasOlder
+                  ? "You're all caught up. Go for a walk!"
+                  : "That's everything. Go for a walk!",
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
             ),

@@ -167,13 +167,13 @@ class _ChallengeTile extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 decoration: BoxDecoration(
-                  color: c.unlocked ? kSurfaceGreen : const Color(0xFFFCEFE9),
+                  color: c.unlocked ? kSurfaceGreen : kAccentSoft,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
                     Icon(c.unlocked ? Icons.lock_open : Icons.card_giftcard,
-                        size: 20, color: c.unlocked ? kPrimary : kAccent),
+                        size: 20, color: c.unlocked ? kPrimary : kAccentDark),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(

@@ -11,20 +11,24 @@ import '../../state/app_state.dart';
 import '../../state/core_providers.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/mention_text.dart';
+import '../../widgets/post_photo.dart';
 import '../../widgets/tags.dart';
 import '../chat/chat_screen.dart';
 import '../people/user_profile_screen.dart';
 import 'post_detail_screen.dart';
 
 /// Opens the DM or group chat with [convId].
-void openChat(BuildContext context, String convId) => Navigator.of(context)
-    .push(MaterialPageRoute(builder: (_) => ChatScreen(convId: convId)));
+void openChat(BuildContext context, String convId) => Navigator.of(
+  context,
+).push(MaterialPageRoute(builder: (_) => ChatScreen(convId: convId)));
 
-void openProfile(BuildContext context, String userId) => Navigator.of(context)
-    .push(MaterialPageRoute(builder: (_) => UserProfileScreen(userId: userId)));
+void openProfile(BuildContext context, String userId) => Navigator.of(
+  context,
+).push(MaterialPageRoute(builder: (_) => UserProfileScreen(userId: userId)));
 
-void openPost(BuildContext context, String postId) => Navigator.of(context)
-    .push(MaterialPageRoute(builder: (_) => PostDetailScreen(postId: postId)));
+void openPost(BuildContext context, String postId) => Navigator.of(
+  context,
+).push(MaterialPageRoute(builder: (_) => PostDetailScreen(postId: postId)));
 
 /// Feed card. At most two buttons; tapping the card opens the detail page.
 class PostCard extends ConsumerWidget {
@@ -61,10 +65,20 @@ class PostCard extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(author?.nickname ?? 'Neighbour',
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                                Text(timeAgo(post.createdAt, now),
-                                    style: const TextStyle(fontSize: 13, color: kMuted)),
+                                Text(
+                                  author?.nickname ?? 'Neighbour',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                Text(
+                                  timeAgo(post.createdAt, now),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: kMuted,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -77,6 +91,13 @@ class PostCard extends ConsumerWidget {
               ),
               const SizedBox(height: 10),
               PostBody(post: post),
+              if (post.photoPath != null) ...[
+                const SizedBox(height: 10),
+                PostPhoto(
+                  path: post.photoPath!,
+                  heroTag: 'card_photo_${post.id}',
+                ),
+              ],
               const SizedBox(height: 10),
               _Actions(post: post, mine: mine),
             ],
@@ -105,24 +126,45 @@ class PostBody extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(post.title ?? 'Meetup',
-                style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+            Text(
+              post.title ?? 'Meetup',
+              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
+            ),
             const SizedBox(height: 6),
-            _InfoRow(icon: Icons.schedule, text: post.startsAt == null ? '' : fmtDateTime(post.startsAt!)),
-            if (loc != null) _InfoRow(icon: Icons.place_outlined, text: loc.name),
+            _InfoRow(
+              icon: Icons.schedule,
+              text: post.startsAt == null ? '' : fmtDateTime(post.startsAt!),
+            ),
+            if (loc != null)
+              _InfoRow(icon: Icons.place_outlined, text: loc.name),
             _InfoRow(icon: Icons.group_outlined, text: people),
             if (post.text.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text(post.text, maxLines: full ? null : 2, overflow: full ? null : TextOverflow.ellipsis),
+              Text(
+                post.text,
+                maxLines: full ? null : 2,
+                overflow: full ? null : TextOverflow.ellipsis,
+              ),
             ],
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
               runSpacing: 6,
               children: [
-                InfoTag(icon: sportIcon(post.sport), label: post.sport?.label ?? 'Sport'),
-                if (post.level != null) InfoTag(icon: Icons.signal_cellular_alt, label: post.level!.label),
-                if (post.safeBuddy) const InfoTag(icon: Icons.shield_outlined, label: 'Safe buddy'),
+                InfoTag(
+                  icon: sportIcon(post.sport),
+                  label: post.sport?.label ?? 'Sport',
+                ),
+                if (post.level != null)
+                  InfoTag(
+                    icon: Icons.signal_cellular_alt,
+                    label: post.level!.label,
+                  ),
+                if (post.safeBuddy)
+                  const InfoTag(
+                    icon: Icons.shield_outlined,
+                    label: 'Safe buddy',
+                  ),
                 if (post.accessibilityFriendly)
                   const InfoTag(icon: Icons.accessible, label: 'Accessible'),
               ],
@@ -138,14 +180,23 @@ class PostBody extends ConsumerWidget {
                 const Icon(Icons.handyman, color: kPrimary),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(post.equipmentItem ?? 'Equipment',
-                      style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+                  child: Text(
+                    post.equipmentItem ?? 'Equipment',
+                    style: const TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
               ],
             ),
             if (post.text.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text(post.text, maxLines: full ? null : 2, overflow: full ? null : TextOverflow.ellipsis),
+              Text(
+                post.text,
+                maxLines: full ? null : 2,
+                overflow: full ? null : TextOverflow.ellipsis,
+              ),
             ],
           ],
         );
@@ -155,8 +206,12 @@ class PostBody extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            MentionText(post.text, maxLines: full ? null : 4, overflow: full ? null : TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16, height: 1.35, color: kText)),
+            MentionText(
+              post.text,
+              maxLines: full ? null : 4,
+              overflow: full ? null : TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 16, height: 1.35, color: kText),
+            ),
             if (loc != null) ...[
               const SizedBox(height: 6),
               _InfoRow(icon: Icons.place_outlined, text: loc.name),
@@ -175,15 +230,15 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 2),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: kMuted),
-            const SizedBox(width: 6),
-            Expanded(child: Text(text, style: const TextStyle(fontSize: 15))),
-          ],
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 2),
+    child: Row(
+      children: [
+        Icon(icon, size: 18, color: kMuted),
+        const SizedBox(width: 6),
+        Expanded(child: Text(text, style: const TextStyle(fontSize: 15))),
+      ],
+    ),
+  );
 }
 
 class _Actions extends ConsumerWidget {
@@ -199,7 +254,10 @@ class _Actions extends ConsumerWidget {
     switch (post.type) {
       case PostType.sport:
         if (mine) {
-          return Text(_ownerLine(), style: const TextStyle(color: kMuted, fontSize: 14));
+          return Text(
+            _ownerLine(),
+            style: const TextStyle(color: kMuted, fontSize: 14),
+          );
         }
         final cheered = post.cheeredBy.contains(me.id);
         final next = post.nextTimeBy.any((n) => n.userId == me.id);
@@ -210,14 +268,16 @@ class _Actions extends ConsumerWidget {
             Expanded(
               child: next
                   ? FilledButton.icon(
-                      onPressed: () =>
-                          ref.read(postsProvider.notifier).toggleNextTime(post.id, me.id),
+                      onPressed: () => ref
+                          .read(postsProvider.notifier)
+                          .toggleNextTime(post.id, me.id),
                       icon: const Icon(Icons.check, size: 18),
                       label: const Text('Next time together'),
                     )
                   : OutlinedButton(
-                      onPressed: () =>
-                          ref.read(postsProvider.notifier).toggleNextTime(post.id, me.id),
+                      onPressed: () => ref
+                          .read(postsProvider.notifier)
+                          .toggleNextTime(post.id, me.id),
                       child: const Text('Next time together'),
                     ),
             ),
@@ -225,9 +285,16 @@ class _Actions extends ConsumerWidget {
         );
       case PostType.meal:
         if (mine) {
-          return Text(_ownerLine(), style: const TextStyle(color: kMuted, fontSize: 14));
+          return Text(
+            _ownerLine(),
+            style: const TextStyle(color: kMuted, fontSize: 14),
+          );
         }
-        return Row(children: [CheerButton(post: post, cheered: post.cheeredBy.contains(me.id))]);
+        return Row(
+          children: [
+            CheerButton(post: post, cheered: post.cheeredBy.contains(me.id)),
+          ],
+        );
       case PostType.meetup:
         return MeetupButton(post: post);
       case PostType.equipment:
@@ -241,12 +308,16 @@ class _Actions extends ConsumerWidget {
   String _ownerLine() {
     final parts = <String>[];
     if (post.cheeredBy.isNotEmpty) {
-      parts.add('${post.cheeredBy.length} ${post.cheeredBy.length == 1 ? 'cheer' : 'cheers'}');
+      parts.add(
+        '${post.cheeredBy.length} ${post.cheeredBy.length == 1 ? 'cheer' : 'cheers'}',
+      );
     }
     if (post.type == PostType.sport && post.nextTimeBy.isNotEmpty) {
       parts.add('${post.nextTimeBy.length} would like to go together');
     }
-    return parts.isEmpty ? 'Only you can see cheers on your posts.' : parts.join(' · ');
+    return parts.isEmpty
+        ? 'Only you can see cheers on your posts.'
+        : parts.join(' · ');
   }
 }
 
@@ -260,7 +331,9 @@ class CheerButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
     void toggle() {
-      if (me != null) ref.read(postsProvider.notifier).toggleCheer(post.id, me.id);
+      if (me != null) {
+        ref.read(postsProvider.notifier).toggleCheer(post.id, me.id);
+      }
     }
 
     return cheered
@@ -279,7 +352,12 @@ class CheerButton extends ConsumerWidget {
 
 /// I'm in / Open chat / Full / Ended, depending on the user's relation to it.
 class MeetupButton extends ConsumerWidget {
-  const MeetupButton({super.key, required this.post, this.expand = false, this.onJoin});
+  const MeetupButton({
+    super.key,
+    required this.post,
+    this.expand = false,
+    this.onJoin,
+  });
 
   final Post post;
   final bool expand;
@@ -319,7 +397,9 @@ class MeetupButton extends ConsumerWidget {
         child: const Text("I'm in"),
       );
     }
-    return expand ? SizedBox(width: double.infinity, child: button) : Align(alignment: Alignment.centerLeft, child: button);
+    return expand
+        ? SizedBox(width: double.infinity, child: button)
+        : Align(alignment: Alignment.centerLeft, child: button);
   }
 }
 
@@ -335,19 +415,26 @@ class EquipmentButton extends ConsumerWidget {
     final me = ref.watch(currentUserProvider);
     if (me == null) return const SizedBox.shrink();
     final loans = ref.watch(loansProvider);
-    final holder = loans.where((l) => l.postId == post.id && l.holdsItem).firstOrNull;
+    final holder = loans
+        .where((l) => l.postId == post.id && l.holdsItem)
+        .firstOrNull;
     final mineOpen = loans
         .where((l) => l.postId == post.id && l.borrowerId == me.id && l.isOpen)
         .firstOrNull;
 
     Widget button;
     if (post.authorId == me.id) {
-      button = Text(holder != null ? 'On loan' : 'Available',
-          style: const TextStyle(color: kMuted, fontWeight: FontWeight.w600));
+      button = Text(
+        holder != null ? 'On loan' : 'Available',
+        style: const TextStyle(color: kMuted, fontWeight: FontWeight.w600),
+      );
     } else if (mineOpen != null && mineOpen.status == LoanStatus.requested) {
       button = const OutlinedButton(onPressed: null, child: Text('Requested'));
     } else if (mineOpen != null) {
-      button = const OutlinedButton(onPressed: null, child: Text('You are borrowing'));
+      button = const OutlinedButton(
+        onPressed: null,
+        child: Text('You are borrowing'),
+      );
     } else if (holder != null) {
       button = const OutlinedButton(onPressed: null, child: Text('On loan'));
     } else {
@@ -359,6 +446,8 @@ class EquipmentButton extends ConsumerWidget {
         child: const Text('Borrow'),
       );
     }
-    return expand ? SizedBox(width: double.infinity, child: button) : Align(alignment: Alignment.centerLeft, child: button);
+    return expand
+        ? SizedBox(width: double.infinity, child: button)
+        : Align(alignment: Alignment.centerLeft, child: button);
   }
 }

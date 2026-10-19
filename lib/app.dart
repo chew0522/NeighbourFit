@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'config/app_theme.dart';
 import 'features/assistant/assistant_bubble.dart';
-import 'features/onboarding/welcome_screen.dart';
+import 'features/auth/auth_screen.dart';
 import 'features/shell/home_shell.dart';
 import 'state/app_state.dart';
 import 'state/core_providers.dart';
@@ -27,7 +27,7 @@ class NeighbourFitApp extends ConsumerWidget {
           if (signedIn) const AssistantBubble(),
         ],
       ),
-      home: signedIn ? const HomeShell() : const WelcomeScreen(),
+      home: signedIn ? const HomeShell() : const AuthScreen(),
     );
   }
 }
