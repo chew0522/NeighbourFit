@@ -1,0 +1,8 @@
+# Web icons only (keeps the Android icon config in pubspec.yaml untouched).
+# Regenerate with: dart run flutter_launcher_icons -f flutter_launcher_icons-web.yaml
+flutter_launcher_icons:
+  web:
+    generate: true
+    image_path: "assets/icon/logo.png"
+    background_color: "#FAF6EA"
+    theme_color: "#3A7D44"
