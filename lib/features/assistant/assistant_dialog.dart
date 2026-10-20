@@ -37,7 +37,10 @@ Future<void> showAssistantDialog(BuildContext context) {
         (from.dy - size.height / 2) / (size.height * 0.34),
       );
       return FadeTransition(
-        opacity: CurvedAnimation(parent: anim, curve: const Interval(0, 0.6, curve: Curves.easeOut)),
+        opacity: CurvedAnimation(
+          parent: anim,
+          curve: const Interval(0, 0.6, curve: Curves.easeOut),
+        ),
         child: ScaleTransition(
           scale: CurvedAnimation(
             parent: anim,
@@ -101,8 +104,11 @@ class _AssistantDialogState extends ConsumerState<AssistantDialog> {
   void _toBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scroll.hasClients) {
-        _scroll.animateTo(_scroll.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+        _scroll.animateTo(
+          _scroll.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
       }
     });
   }
@@ -121,7 +127,10 @@ class _AssistantDialogState extends ConsumerState<AssistantDialog> {
     final st = ref.watch(assistantProvider);
     final size = MediaQuery.of(context).size;
     return Dialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: size.width * 0.075, vertical: 40),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: size.width * 0.075,
+        vertical: 40,
+      ),
       backgroundColor: kBackground,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       clipBehavior: Clip.antiAlias,
@@ -137,9 +146,16 @@ class _AssistantDialogState extends ConsumerState<AssistantDialog> {
                   const Icon(Icons.auto_awesome, color: kAccent),
                   const SizedBox(width: 8),
                   const Expanded(
-                    child: Text('Ask NeighbourFit',
-                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
+                    child: Text(
+                      'Ask NeighbourFit',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
+                  _ModeChip(live: ref.watch(aiConfigProvider).hasKey),
                   IconButton(
                     tooltip: 'Close',
                     icon: const Icon(Icons.close, color: Colors.white),
@@ -155,13 +171,23 @@ class _AssistantDialogState extends ConsumerState<AssistantDialog> {
                       controller: _scroll,
                       padding: const EdgeInsets.all(12),
                       children: [
-                        for (final m in st.messages) _MessageView(message: m, onSearchAgain: () => _focus.requestFocus()),
+                        for (final m in st.messages)
+                          _MessageView(
+                            message: m,
+                            onSearchAgain: () => _focus.requestFocus(),
+                          ),
                         if (st.busy)
                           const Padding(
                             padding: EdgeInsets.all(12),
                             child: Row(
                               children: [
-                                SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                                SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
                                 SizedBox(width: 10),
                                 Text('Looking for neighbours…'),
                               ],
@@ -180,12 +206,17 @@ class _AssistantDialogState extends ConsumerState<AssistantDialog> {
                       focusNode: _focus,
                       textInputAction: TextInputAction.send,
                       onSubmitted: _ask,
-                      decoration: const InputDecoration(hintText: 'What would you like to do?'),
+                      decoration: const InputDecoration(
+                        hintText: 'What would you like to do?',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton.filled(
-                    style: IconButton.styleFrom(backgroundColor: kPrimary, foregroundColor: Colors.white),
+                    style: IconButton.styleFrom(
+                      backgroundColor: kPrimary,
+                      foregroundColor: Colors.white,
+                    ),
                     onPressed: st.busy ? null : () => _ask(_input.text),
                     icon: const Icon(Icons.send),
                     tooltip: 'Send',
@@ -210,8 +241,10 @@ class _Welcome extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const Text('Hi! Tell me what you feel like doing and I will find neighbours to do it with.',
-            style: TextStyle(fontSize: 17, height: 1.35)),
+        const Text(
+          'Hi! Tell me what you feel like doing and I will find neighbours to do it with.',
+          style: TextStyle(fontSize: 17, height: 1.35),
+        ),
         const SizedBox(height: 14),
         const Text('Try one of these:', style: TextStyle(color: kMuted)),
         const SizedBox(height: 8),
@@ -220,7 +253,10 @@ class _Welcome extends StatelessWidget {
           runSpacing: 8,
           children: [
             for (final e in _examples)
-              ActionChip(label: Text(e, style: const TextStyle(fontSize: 14)), onPressed: () => onPick(e)),
+              ActionChip(
+                label: Text(e, style: const TextStyle(fontSize: 14)),
+                onPressed: () => onPick(e),
+              ),
           ],
         ),
       ],
@@ -242,8 +278,13 @@ class _MessageView extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
-          decoration: BoxDecoration(color: kSurfaceGreen, borderRadius: BorderRadius.circular(16)),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.6,
+          ),
+          decoration: BoxDecoration(
+            color: kSurfaceGreen,
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Text(message.text, style: const TextStyle(fontSize: 16)),
         ),
       );
@@ -254,8 +295,14 @@ class _MessageView extends StatelessWidget {
         Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-          child: Text(message.text, style: const TextStyle(fontSize: 16, height: 1.3)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            message.text,
+            style: const TextStyle(fontSize: 16, height: 1.3),
+          ),
         ),
         for (final r in message.results)
           Padding(
@@ -272,9 +319,30 @@ class _MessageView extends StatelessWidget {
             ),
           ),
         if (message.note != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 6),
-            child: Text(message.note!, style: const TextStyle(color: kMuted, fontSize: 12)),
+          Container(
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: kAccentSoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off, size: 14, color: kAccentDark),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    message.note!,
+                    style: const TextStyle(
+                      color: kAccentDark,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
       ],
     );
@@ -303,31 +371,53 @@ class _ResultCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final r = result.result;
-    final liveTop = r.post == null ? null : ref.watch(postByIdProvider(r.post!.id));
+    final liveTop = r.post == null
+        ? null
+        : ref.watch(postByIdProvider(r.post!.id));
     final Post? p = liveTop ?? r.post;
 
     if (r.challenge != null) {
-      final c = ref.watch(challengesProvider).where((e) => e.id == r.challenge!.id).firstOrNull ?? r.challenge!;
+      final c =
+          ref
+              .watch(challengesProvider)
+              .where((e) => e.id == r.challenge!.id)
+              .firstOrNull ??
+          r.challenge!;
       return Card(
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ChallengeDetailScreen(challengeId: c.id))),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ChallengeDetailScreen(challengeId: c.id),
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(c.title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                Text(
+                  c.title,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: LinearProgressIndicator(
-                      value: c.fraction, minHeight: 10, color: kGreen, backgroundColor: kSurfaceGreen),
+                    value: c.fraction,
+                    minHeight: 10,
+                    color: kGreen,
+                    backgroundColor: kSurfaceGreen,
+                  ),
                 ),
                 const SizedBox(height: 4),
-                Text('${NumberFormat.decimalPattern().format(c.progress)} / ${NumberFormat.decimalPattern().format(c.target)} ${c.unit}',
-                    style: const TextStyle(fontSize: 13, color: kMuted)),
+                Text(
+                  '${NumberFormat.decimalPattern().format(c.progress)} / ${NumberFormat.decimalPattern().format(c.target)} ${c.unit}',
+                  style: const TextStyle(fontSize: 13, color: kMuted),
+                ),
               ],
             ),
           ),
@@ -339,7 +429,9 @@ class _ResultCard extends ConsumerWidget {
     final author = ref.watch(userByIdProvider(p.authorId));
     final loc = ref.watch(referenceProvider).location(p.locationId);
     final isMeetup = p.type == PostType.meetup;
-    final people = p.capacity == null ? '${p.memberIds.length} going' : '${p.memberIds.length}/${p.capacity} going';
+    final people = p.capacity == null
+        ? '${p.memberIds.length} going'
+        : '${p.memberIds.length}/${p.capacity} going';
 
     return Card(
       child: InkWell(
@@ -355,37 +447,76 @@ class _ResultCard extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  Icon(isMeetup ? sportIcon(p.sport) : Icons.handyman, size: 20, color: kPrimary),
+                  Icon(
+                    isMeetup ? sportIcon(p.sport) : Icons.handyman,
+                    size: 20,
+                    color: kPrimary,
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      isMeetup ? (p.title ?? 'Meetup') : (p.equipmentItem ?? 'Equipment'),
-                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                      isMeetup
+                          ? (p.title ?? 'Meetup')
+                          : (p.equipmentItem ?? 'Equipment'),
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
               if (isMeetup && p.startsAt != null)
-                Text(fmtDateTime(p.startsAt!), style: const TextStyle(fontSize: 14)),
-              if (loc != null) Text(loc.name, style: const TextStyle(fontSize: 14, color: kMuted)),
-              if (isMeetup) Text(people, style: const TextStyle(fontSize: 14, color: kMuted)),
-              if (!isMeetup) Text('Owner: ${author?.nickname ?? 'Neighbour'}', style: const TextStyle(fontSize: 14, color: kMuted)),
+                Text(
+                  fmtDateTime(p.startsAt!),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              if (loc != null)
+                Text(
+                  loc.name,
+                  style: const TextStyle(fontSize: 14, color: kMuted),
+                ),
+              if (isMeetup)
+                Text(
+                  people,
+                  style: const TextStyle(fontSize: 14, color: kMuted),
+                ),
+              if (!isMeetup)
+                Text(
+                  'Owner: ${author?.nickname ?? 'Neighbour'}',
+                  style: const TextStyle(fontSize: 14, color: kMuted),
+                ),
               if (isMeetup && (p.safeBuddy || p.accessibilityFriendly)) ...[
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 6,
                   children: [
-                    if (p.safeBuddy) const InfoTag(icon: Icons.shield_outlined, label: 'Safe buddy'),
-                    if (p.accessibilityFriendly) const InfoTag(icon: Icons.accessible, label: 'Accessible'),
+                    if (p.safeBuddy)
+                      const InfoTag(
+                        icon: Icons.shield_outlined,
+                        label: 'Safe buddy',
+                      ),
+                    if (p.accessibilityFriendly)
+                      const InfoTag(
+                        icon: Icons.accessible,
+                        label: 'Accessible',
+                      ),
                   ],
                 ),
               ],
               const SizedBox(height: 8),
-              Text(result.explanation,
-                  style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic, height: 1.3)),
+              Text(
+                result.explanation,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontStyle: FontStyle.italic,
+                  height: 1.3,
+                ),
+              ),
               const SizedBox(height: 8),
-              if (isMeetup) MeetupButton(post: p, onJoin: () => _log(ref, 'joined')),
+              if (isMeetup)
+                MeetupButton(post: p, onJoin: () => _log(ref, 'joined')),
               if (!isMeetup) EquipmentButton(post: p),
             ],
           ),
@@ -393,4 +524,29 @@ class _ResultCard extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Header chip: tells the user whether the AI is configured or the app is
+/// running on the offline keyword parser.
+class _ModeChip extends StatelessWidget {
+  const _ModeChip({required this.live});
+
+  final bool live;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    decoration: BoxDecoration(
+      color: live ? Colors.white24 : kAccent,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Text(
+      live ? 'AI on' : 'Offline',
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w800,
+        color: live ? Colors.white : kAccentDark,
+      ),
+    ),
+  );
 }

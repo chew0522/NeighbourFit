@@ -16,16 +16,19 @@ class KeywordParser {
     bool has(String pattern) => RegExp(pattern).hasMatch(t);
 
     // Equipment intent comes first.
-    final wantsEquipment = has(r'\b(borrow|lend|lending|rent)\b') ||
+    final wantsEquipment =
+        has(r'\b(borrow|lend|lending|rent)\b') ||
         has(r'\b(mat|racket|racquet|helmet|dumbbells?)\b');
     if (wantsEquipment) {
       String? item;
-      final borrow =
-          RegExp(r'\b(?:borrow|lend|rent)\s+(?:a|an|the|some)?\s*([a-z][a-z\s]*)')
-              .firstMatch(t);
+      final borrow = RegExp(
+        r'\b(?:borrow|lend|rent)\s+(?:a|an|the|some)?\s*([a-z][a-z\s]*)',
+      ).firstMatch(t);
       if (borrow != null) {
         item = borrow.group(1)!.trim();
-        item = item.replaceAll(RegExp(r'\b(please|today|tomorrow|now)\b.*$'), '').trim();
+        item = item
+            .replaceAll(RegExp(r'\b(please|today|tomorrow|now)\b.*$'), '')
+            .trim();
       }
       item ??= _equipmentItem.firstMatch(t)?.group(1)?.trim();
       return ParsedQuery(
@@ -72,13 +75,16 @@ class KeywordParser {
 
     final sameGroup = has(r'\b(my age|same age|similar age)\b');
     var gender = 'none';
-    if (has(r'\b(women only|women-only|girls only|female only|ladies only)\b')) {
+    if (has(
+      r'\b(women only|women-only|girls only|female only|ladies only)\b',
+    )) {
       gender = 'women_only';
     } else if (has(r'\b(men only|men-only|boys only|male only)\b')) {
       gender = 'men_only';
     }
     final accessibility = has(
-        r'\b(wheelchair|stroller|pram|step-free|step free|slow|elderly|accessible|seating|senior)\b');
+      r'\b(wheelchair|stroller|pram|step-free|step free|slow|elderly|accessible|seating|senior)\b',
+    );
     Level? level;
     if (has(r'\b(beginner|beginners|newbie|new to)\b')) {
       level = Level.beginner;
@@ -89,7 +95,8 @@ class KeywordParser {
     }
     final nearMe = has(r'\b(near|nearby|close|closest)\b');
 
-    final anything = sport != null ||
+    final anything =
+        sport != null ||
         slot != null ||
         date != null ||
         weekend ||
@@ -98,9 +105,14 @@ class KeywordParser {
         accessibility ||
         level != null ||
         nearMe ||
-        has(r'\b(meetup|activity|group|join|anyone|buddy|partner|exercise|people)\b');
+        has(
+          r'\b(meetup|activity|group|join|anyone|buddy|partner|exercise|people)\b',
+        );
 
-    if (!anything && has(r'\b(challenge|steps|10,?000)\b')) {
+    if (!anything &&
+        has(
+          r'\b(challenge|steps|10,?000|streak|reward|rewards|points|voucher)\b',
+        )) {
       return const ParsedQuery(intent: QueryIntent.challengeInfo);
     }
     if (!anything) return const ParsedQuery(intent: QueryIntent.other);

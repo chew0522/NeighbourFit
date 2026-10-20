@@ -17,7 +17,11 @@ class AiException implements Exception {
 
 /// One recommendation reduced to plain facts for the explanation call.
 class ExplainItem {
-  const ExplainItem({required this.label, required this.facts, required this.score});
+  const ExplainItem({
+    required this.label,
+    required this.facts,
+    required this.score,
+  });
 
   final String label;
   final List<String> facts;
@@ -28,7 +32,8 @@ class ExplainItem {
 /// language and structured data. It never ranks anything. Callers must catch
 /// [AiException] and fall back.
 class AiService {
-  AiService(this.config, {http.Client? client}) : _client = client ?? http.Client();
+  AiService(this.config, {http.Client? client})
+    : _client = client ?? http.Client();
 
   final AiConfig config;
   final http.Client _client;
@@ -52,6 +57,11 @@ Schema:
   "nearMe": false,
   "equipmentItem": "string | null"
 }
+Intent guide:
+- find_activity: wants to exercise or join a workout, run, walk, class or meetup.
+- find_equipment: wants to borrow or lend equipment (racket, mat, bike, weights).
+- challenge_info: asks about community challenges, points, streaks, rewards, vouchers or progress, e.g. "how do I unlock the 7-day streak reward", "how many points do I need", "how is the steps challenge going".
+- other: anything unrelated to exercise, equipment or challenges.
 Convert "today", "tomorrow", "next Saturday" or "24 Oct" into a concrete ISO date. Use dayHint "this_weekend" only for the vague phrase "this weekend".''';
 
   static const _explainSystem = '''
@@ -88,7 +98,8 @@ Respond with JSON only: {"explanations": ["...", "..."]} with one entry per reco
     }
     if (res.statusCode != 200) throw AiException('HTTP ${res.statusCode}');
     try {
-      final data = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
+      final data =
+          jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
       final content =
           (data['choices'] as List).first['message']['content'] as String;
       return content;
@@ -108,10 +119,21 @@ Respond with JSON only: {"explanations": ["...", "..."]} with one entry per reco
 
   /// Text -> structured query. Throws [AiException] on any failure.
   Future<ParsedQuery> parseQuery(String text, DateTime now) async {
-    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const weekdays = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
     final today =
         '${weekdays[now.weekday - 1]} ${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final content = await _chat(_parseSystem.replaceAll('{today}', today), text);
+    final content = await _chat(
+      _parseSystem.replaceAll('{today}', today),
+      text,
+    );
     return ParsedQuery.fromAiJson(_decode(content), now);
   }
 
