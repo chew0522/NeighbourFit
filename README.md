@@ -43,16 +43,6 @@ NeighbourFit uses fitness as the reason to connect, so residents get healthier a
 | 🎁 | **Local rewards** | Earn points and redeem vouchers at nearby shops |
 | 🔎 | **AI advanced search** | Ask anything and see the most relevant results first |
 
-## Screenshots
-
-| Community feed | Meetups | Equipment lending |
-|---|---|---|
-| <img src="docs/images/feed.png" width="220"> | <img src="docs/images/meetups.png" width="220"> | <img src="docs/images/lending.png" width="220"> |
-
-| Team challenges | Local rewards | AI advanced search |
-|---|---|---|
-| <img src="docs/images/challenges.png" width="220"> | <img src="docs/images/rewards.png" width="220"> | <img src="docs/images/search.png" width="220"> |
-
 ## Value for Sime Darby Property
 
 1. **More attractive townships.** Active, connected communities set townships apart and can support sales and rental demand.
