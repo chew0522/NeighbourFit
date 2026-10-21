@@ -63,11 +63,11 @@ cd NeighbourFit
 
 The live version is hosted at https://neighbourfit-24d3c.web.app/.
 
-## Team
+## Contributors
 
-| Name | Role |
-|---|---|
-| Chai Shun Ying | Leader |
-| Ng Yu Hui | Member |
-| Sio Zixin | Member |
-| Desmond Chew Boon Cong | Member |
+| Name | LinkedIn | GitHub |
+|---|---|---|
+| Chai Shun Ying | [LinkedIn](LINKEDIN_URL) | [GitHub](GITHUB_URL) |
+| Ng Yu Hui | [LinkedIn](https://www.linkedin.com/in/yu-hui-ng-52610b339) | [@yuhuing](https://github.com/yuhuing) |
+| Sio Zixin | [LinkedIn](LINKEDIN_URL) | [GitHub](GITHUB_URL) |
+| Desmond Chew Boon Cong | [LinkedIn](LINKEDIN_URL) | [@chew0522](https://github.com/chew0522) |
