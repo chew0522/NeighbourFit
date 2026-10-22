@@ -5,6 +5,7 @@ import '../../config/app_theme.dart';
 import '../../core/models/enums.dart';
 import '../../core/models/equipment_loan.dart';
 import '../../core/models/post.dart';
+import '../../core/models/user_profile.dart';
 import '../../core/utils/time_utils.dart';
 import '../../state/actions.dart';
 import '../../state/app_state.dart';
@@ -160,13 +161,6 @@ class PostBody extends ConsumerWidget {
                     icon: Icons.signal_cellular_alt,
                     label: post.level!.label,
                   ),
-                if (post.safeBuddy)
-                  const InfoTag(
-                    icon: Icons.shield_outlined,
-                    label: 'Safe buddy',
-                  ),
-                if (post.accessibilityFriendly)
-                  const InfoTag(icon: Icons.accessible, label: 'Accessible'),
               ],
             ),
           ],
@@ -175,6 +169,14 @@ class PostBody extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (post.isRequest)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: InfoTag(
+                  icon: Icons.front_hand_rounded,
+                  label: 'Looking to borrow',
+                ),
+              ),
             Row(
               children: [
                 const Icon(Icons.handyman, color: kPrimary),
@@ -190,6 +192,16 @@ class PostBody extends ConsumerWidget {
                 ),
               ],
             ),
+            if (post.isRequest && post.startsAt != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Needed by ${fmtDate(post.startsAt!)}',
+                style: const TextStyle(
+                  color: kAccentDark,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
             if (post.text.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
@@ -414,6 +426,9 @@ class EquipmentButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
     if (me == null) return const SizedBox.shrink();
+    if (post.isRequest) {
+      return _RequestButton(post: post, me: me, expand: expand);
+    }
     final loans = ref.watch(loansProvider);
     final holder = loans
         .where((l) => l.postId == post.id && l.holdsItem)
@@ -444,6 +459,56 @@ class EquipmentButton extends ConsumerWidget {
           if (id != null && context.mounted) openChat(context, id);
         },
         child: const Text('Borrow'),
+      );
+    }
+    return expand
+        ? SizedBox(width: double.infinity, child: button)
+        : Align(alignment: Alignment.centerLeft, child: button);
+  }
+}
+
+/// "I can lend" for a request. Shows who offered once somebody has.
+class _RequestButton extends ConsumerWidget {
+  const _RequestButton({
+    required this.post,
+    required this.me,
+    required this.expand,
+  });
+
+  final Post post;
+  final UserProfile me;
+  final bool expand;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final offerer = post.offeredBy == null
+        ? null
+        : ref.watch(userByIdProvider(post.offeredBy!));
+    final Widget button;
+    if (post.authorId == me.id) {
+      button = Text(
+        offerer == null
+            ? 'Waiting for a neighbour'
+            : 'Offered by ${offerer.nickname}',
+        style: const TextStyle(color: kMuted, fontWeight: FontWeight.w600),
+      );
+    } else if (post.offeredBy == me.id) {
+      button = const OutlinedButton(
+        onPressed: null,
+        child: Text('You offered to lend'),
+      );
+    } else if (post.offeredBy != null) {
+      button = OutlinedButton(
+        onPressed: null,
+        child: Text('Offered by ${offerer?.nickname ?? 'a neighbour'}'),
+      );
+    } else {
+      button = FilledButton(
+        onPressed: () async {
+          final id = await ref.read(appActionsProvider).offerToLend(post);
+          if (id != null && context.mounted) openChat(context, id);
+        },
+        child: const Text('I can lend'),
       );
     }
     return expand

@@ -9,7 +9,9 @@ import 'package:neighbourfit/state/core_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('nothing is preselected and every step needs a choice', (tester) async {
+  testWidgets('nothing is preselected and every step needs a choice', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(900, 2800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -17,18 +19,22 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final store = LocalStore(await SharedPreferences.getInstance());
     const reference = ReferenceData(
-      communities: [Community(id: 'c1', name: 'Lakeside Residences', lat: 3.1, lng: 101.6)],
+      communities: [
+        Community(id: 'c1', name: 'Lakeside Residences', lat: 3.1, lng: 101.6),
+      ],
       locations: [],
       vouchers: [],
       residentCodes: [],
     );
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        storeProvider.overrideWithValue(store),
-        referenceProvider.overrideWithValue(reference),
-      ],
-      child: const MaterialApp(home: WizardScreen()),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          storeProvider.overrideWithValue(store),
+          referenceProvider.overrideWithValue(reference),
+        ],
+        child: const MaterialApp(home: WizardScreen()),
+      ),
+    );
 
     int selectedChips() => tester
         .widgetList<ChoiceChip>(find.byType(ChoiceChip))

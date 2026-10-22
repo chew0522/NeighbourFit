@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 // Warm leaf-green palette. Green is the main colour (buttons, selected states,
 // progress). The soft yellow is only a highlight (AI bubble, create button,
 // badges), and the cream background keeps everything warm.
-const kPrimary = Color(0xFF3A7D44); // leaf green: buttons, selected tab, app name
+const kPrimary = Color(
+  0xFF3A7D44,
+); // leaf green: buttons, selected tab, app name
 const kGreen = Color(0xFF5FA463); // lighter leaf: progress bars, small accents
 const kAccent = Color(0xFFF6D36B); // light warm yellow: highlights only
 const kAccentSoft = Color(0xFFFFF3CC); // pale butter tint behind accent icons
-const kAccentDark = Color(0xFF9A6A06); // amber for icons and text on light backgrounds
+const kAccentDark = Color(
+  0xFF9A6A06,
+); // amber for icons and text on light backgrounds
 const kBackground = Color(0xFFFAF6EA); // warm cream page background
 const kText = Color(0xFF26302A); // warm dark green-grey text
-const kSurfaceGreen = Color(0xFFE4F0DA); // soft sage: chips, chosen and done states
+const kSurfaceGreen = Color(
+  0xFFE4F0DA,
+); // soft sage: chips, chosen and done states
 const kMuted = Color(0xFF6F6B5E); // warm grey secondary text
 const kBorder = Color(0xFFDDD6C3); // warm outline
 const kClay = Color(0xFFB5651D); // earthy supporting colour
@@ -31,8 +37,16 @@ ThemeData buildTheme() {
     textTheme: const TextTheme(
       bodyLarge: TextStyle(fontSize: 16, color: kText),
       bodyMedium: TextStyle(fontSize: 16, color: kText),
-      titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: kText),
-      titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: kText),
+      titleMedium: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: kText,
+      ),
+      titleLarge: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: kText,
+      ),
       labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     ),
     // Light, clean app bars (TikTok-style): cream background, dark text.
@@ -42,7 +56,11 @@ ThemeData buildTheme() {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: kText),
+      titleTextStyle: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.w800,
+        color: kText,
+      ),
     ),
     cardTheme: CardThemeData(
       color: Colors.white,
@@ -88,8 +106,14 @@ ThemeData buildTheme() {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: radius, borderSide: const BorderSide(color: kBorder)),
-      enabledBorder: OutlineInputBorder(borderRadius: radius, borderSide: const BorderSide(color: kBorder)),
+      border: OutlineInputBorder(
+        borderRadius: radius,
+        borderSide: const BorderSide(color: kBorder),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: radius,
+        borderSide: const BorderSide(color: kBorder),
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     ),
     snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),

@@ -13,16 +13,16 @@ class RedeemedVoucher {
   final DateTime at;
 
   Map<String, dynamic> toJson() => {
-        'voucherId': voucherId,
-        'code': code,
-        'at': at.toIso8601String(),
-      };
+    'voucherId': voucherId,
+    'code': code,
+    'at': at.toIso8601String(),
+  };
 
   factory RedeemedVoucher.fromJson(Map<String, dynamic> j) => RedeemedVoucher(
-        voucherId: j['voucherId'] as String? ?? '',
-        code: j['code'] as String? ?? '',
-        at: parseDt(j['at']),
-      );
+    voucherId: j['voucherId'] as String? ?? '',
+    code: j['code'] as String? ?? '',
+    at: parseDt(j['at']),
+  );
 }
 
 class UserProfile {
@@ -39,7 +39,6 @@ class UserProfile {
     this.timeSlots = const [],
     this.agePref = 'any',
     this.genderPref = 'any',
-    this.emergencyContactName,
     this.visibility = const {
       'ageGroup': FieldVisibility.everyone,
       'gender': FieldVisibility.onlyMe,
@@ -50,7 +49,6 @@ class UserProfile {
     this.points = 0,
     this.redeemedVouchers = const [],
     this.dismissedSuggestionIds = const [],
-    this.joinAwardIds = const [],
     this.isDemo = false,
     required this.createdAt,
   });
@@ -71,15 +69,11 @@ class UserProfile {
 
   /// 'any' or 'women_only'
   final String genderPref;
-  final String? emergencyContactName;
   final Map<String, FieldVisibility> visibility;
   final List<String> blockedUserIds;
   final int points;
   final List<RedeemedVoucher> redeemedVouchers;
   final List<String> dismissedSuggestionIds;
-
-  /// Meetups for which the +20 points were already given.
-  final List<String> joinAwardIds;
   final bool isDemo;
   final DateTime createdAt;
 
@@ -108,64 +102,54 @@ class UserProfile {
     List<TimeSlot>? timeSlots,
     String? agePref,
     String? genderPref,
-    String? emergencyContactName,
-    bool clearEmergencyContact = false,
     Map<String, FieldVisibility>? visibility,
     List<String>? blockedUserIds,
     int? points,
     List<RedeemedVoucher>? redeemedVouchers,
     List<String>? dismissedSuggestionIds,
-    List<String>? joinAwardIds,
-  }) =>
-      UserProfile(
-        id: id,
-        nickname: nickname ?? this.nickname,
-        avatarColor: avatarColor ?? this.avatarColor,
-        ageGroup: ageGroup ?? this.ageGroup,
-        gender: gender ?? this.gender,
-        languages: languages ?? this.languages,
-        communityId: communityId ?? this.communityId,
-        sports: sports ?? this.sports,
-        level: level ?? this.level,
-        timeSlots: timeSlots ?? this.timeSlots,
-        agePref: agePref ?? this.agePref,
-        genderPref: genderPref ?? this.genderPref,
-        emergencyContactName: clearEmergencyContact
-            ? null
-            : (emergencyContactName ?? this.emergencyContactName),
-        visibility: visibility ?? this.visibility,
-        blockedUserIds: blockedUserIds ?? this.blockedUserIds,
-        points: points ?? this.points,
-        redeemedVouchers: redeemedVouchers ?? this.redeemedVouchers,
-        dismissedSuggestionIds:
-            dismissedSuggestionIds ?? this.dismissedSuggestionIds,
-        joinAwardIds: joinAwardIds ?? this.joinAwardIds,
-        isDemo: isDemo,
-        createdAt: createdAt,
-      );
+  }) => UserProfile(
+    id: id,
+    nickname: nickname ?? this.nickname,
+    avatarColor: avatarColor ?? this.avatarColor,
+    ageGroup: ageGroup ?? this.ageGroup,
+    gender: gender ?? this.gender,
+    languages: languages ?? this.languages,
+    communityId: communityId ?? this.communityId,
+    sports: sports ?? this.sports,
+    level: level ?? this.level,
+    timeSlots: timeSlots ?? this.timeSlots,
+    agePref: agePref ?? this.agePref,
+    genderPref: genderPref ?? this.genderPref,
+    visibility: visibility ?? this.visibility,
+    blockedUserIds: blockedUserIds ?? this.blockedUserIds,
+    points: points ?? this.points,
+    redeemedVouchers: redeemedVouchers ?? this.redeemedVouchers,
+    dismissedSuggestionIds:
+        dismissedSuggestionIds ?? this.dismissedSuggestionIds,
+    isDemo: isDemo,
+    createdAt: createdAt,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'nickname': nickname,
-        'avatarColor': avatarColor,
-        'ageGroup': ageGroup.label,
-        'gender': gender.name,
-        'languages': languages,
-        'communityId': communityId,
-        'sports': sports.map((e) => e.name).toList(),
-        'level': level.name,
-        'timeSlots': timeSlots.map((e) => e.name).toList(),
-        'matchPrefs': {'agePref': agePref, 'genderPref': genderPref},
-        'emergencyContactName': emergencyContactName,
-        'visibility': visibility.map((k, v) => MapEntry(k, v.name)),
-        'blockedUserIds': blockedUserIds,
-        'points': points,
-        'redeemedVouchers': redeemedVouchers.map((e) => e.toJson()).toList(),
-        'dismissedSuggestionIds': dismissedSuggestionIds,
-        'joinAwardIds': joinAwardIds,
-        'isDemo': isDemo,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'nickname': nickname,
+    'avatarColor': avatarColor,
+    'ageGroup': ageGroup.label,
+    'gender': gender.name,
+    'languages': languages,
+    'communityId': communityId,
+    'sports': sports.map((e) => e.name).toList(),
+    'level': level.name,
+    'timeSlots': timeSlots.map((e) => e.name).toList(),
+    'matchPrefs': {'agePref': agePref, 'genderPref': genderPref},
+    'visibility': visibility.map((k, v) => MapEntry(k, v.name)),
+    'blockedUserIds': blockedUserIds,
+    'points': points,
+    'redeemedVouchers': redeemedVouchers.map((e) => e.toJson()).toList(),
+    'dismissedSuggestionIds': dismissedSuggestionIds,
+    'isDemo': isDemo,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory UserProfile.fromJson(Map<String, dynamic> j) {
     final prefs = asMap(j['matchPrefs']);
@@ -178,10 +162,9 @@ class UserProfile {
       gender: enumByName(Gender.values, j['gender']) ?? Gender.undisclosed,
       languages: strList(j['languages']),
       communityId: j['communityId'] as String? ?? 'c_lakeside',
-      sports: strList(j['sports'])
-          .map((e) => enumByName(Sport.values, e))
-          .whereType<Sport>()
-          .toList(),
+      sports: strList(
+        j['sports'],
+      ).map((e) => enumByName(Sport.values, e)).whereType<Sport>().toList(),
       level: enumByName(Level.values, j['level']) ?? Level.beginner,
       timeSlots: strList(j['timeSlots'])
           .map((e) => enumByName(TimeSlot.values, e))
@@ -189,19 +172,23 @@ class UserProfile {
           .toList(),
       agePref: prefs['agePref'] as String? ?? 'any',
       genderPref: prefs['genderPref'] as String? ?? 'any',
-      emergencyContactName: j['emergencyContactName'] as String?,
       visibility: {
         for (final f in visibilityFields)
-          f: enumByName(FieldVisibility.values, vis[f] == 'community' ? 'everyone' : vis[f]) ??
-              (f == 'gender' ? FieldVisibility.onlyMe : FieldVisibility.everyone),
+          f:
+              enumByName(
+                FieldVisibility.values,
+                vis[f] == 'community' ? 'everyone' : vis[f],
+              ) ??
+              (f == 'gender'
+                  ? FieldVisibility.onlyMe
+                  : FieldVisibility.everyone),
       },
       blockedUserIds: strList(j['blockedUserIds']),
       points: (j['points'] as num?)?.toInt() ?? 0,
-      redeemedVouchers: mapList(j['redeemedVouchers'])
-          .map(RedeemedVoucher.fromJson)
-          .toList(),
+      redeemedVouchers: mapList(
+        j['redeemedVouchers'],
+      ).map(RedeemedVoucher.fromJson).toList(),
       dismissedSuggestionIds: strList(j['dismissedSuggestionIds']),
-      joinAwardIds: strList(j['joinAwardIds']),
       isDemo: j['isDemo'] as bool? ?? false,
       createdAt: parseDt(j['createdAt']),
     );

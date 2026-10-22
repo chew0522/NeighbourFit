@@ -19,15 +19,19 @@ class AuthAccount {
   final String hash;
   final String userId;
 
-  Map<String, dynamic> toJson() =>
-      {'email': email, 'salt': salt, 'hash': hash, 'userId': userId};
+  Map<String, dynamic> toJson() => {
+    'email': email,
+    'salt': salt,
+    'hash': hash,
+    'userId': userId,
+  };
 
   factory AuthAccount.fromJson(Map<String, dynamic> j) => AuthAccount(
-        email: j['email'] as String? ?? '',
-        salt: j['salt'] as String? ?? '',
-        hash: j['hash'] as String? ?? '',
-        userId: j['userId'] as String? ?? '',
-      );
+    email: j['email'] as String? ?? '',
+    salt: j['salt'] as String? ?? '',
+    hash: j['hash'] as String? ?? '',
+    userId: j['userId'] as String? ?? '',
+  );
 }
 
 /// Local email and password accounts. MOCK: this is a prototype, so the data
@@ -56,13 +60,18 @@ class AuthRepository {
   }) async {
     final salt = newId();
     final list = _all()
-      ..add(AuthAccount(
-        email: normalise(email),
-        salt: salt,
-        hash: _hash(salt, password),
-        userId: userId,
-      ));
-    await _store.writeList(StoreKeys.auth, list.map((a) => a.toJson()).toList());
+      ..add(
+        AuthAccount(
+          email: normalise(email),
+          salt: salt,
+          hash: _hash(salt, password),
+          userId: userId,
+        ),
+      );
+    await _store.writeList(
+      StoreKeys.auth,
+      list.map((a) => a.toJson()).toList(),
+    );
   }
 
   /// The user id for these credentials, or null if they do not match.

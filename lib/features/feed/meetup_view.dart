@@ -284,26 +284,6 @@ class MeetupDetailView extends ConsumerWidget {
                       ),
                     ),
                   ],
-                  if (post.safeBuddy) ...[
-                    const SizedBox(height: 14),
-                    const DetailBanner(
-                      icon: Icons.shield_outlined,
-                      color: kAccentSoft,
-                      iconColor: kAccentDark,
-                      text:
-                          'Safe buddy meetup. Arrive together, look out for each other and let the group know when you are home.',
-                    ),
-                  ],
-                  if (post.accessibilityFriendly) ...[
-                    const SizedBox(height: 14),
-                    const DetailBanner(
-                      icon: Icons.accessible_rounded,
-                      color: kSurfaceGreen,
-                      iconColor: kPrimary,
-                      text:
-                          'Accessibility-friendly: step-free route, easy pace, with seating and shade.',
-                    ),
-                  ],
 
                   // ---- organiser
                   const SizedBox(height: 14),
@@ -482,13 +462,6 @@ class _Backdrop extends StatelessWidget {
                       icon: Icons.signal_cellular_alt,
                       label: post.level!.label,
                     ),
-                  if (post.safeBuddy)
-                    const HeroChip(
-                      icon: Icons.shield_outlined,
-                      label: 'Safe buddy',
-                    ),
-                  if (post.accessibilityFriendly)
-                    const HeroChip(icon: Icons.accessible, label: 'Accessible'),
                 ],
               ),
             ),

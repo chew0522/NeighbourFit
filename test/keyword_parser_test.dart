@@ -37,12 +37,6 @@ void main() {
     expect(q.timeSlot, TimeSlot.weekend);
   });
 
-  test('accessibility words set the flag', () {
-    final q = parser.parse('slow walk with a stroller', now);
-    expect(q.needsAccessibility, isTrue);
-    expect(q.sport, Sport.walking);
-  });
-
   test('challenge questions', () {
     final q = parser.parse('how is the steps challenge going', now);
     expect(q.intent, QueryIntent.challengeInfo);

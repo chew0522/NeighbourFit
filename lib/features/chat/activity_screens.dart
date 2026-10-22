@@ -58,36 +58,42 @@ class _Row extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Material(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  leading,
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [title, const SizedBox(height: 2), subtitle],
-                    ),
-                  ),
-                  if (trailing != null) trailing!,
-                ],
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              leading,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [title, const SizedBox(height: 2), subtitle],
+                ),
               ),
-            ),
+              if (trailing != null) trailing!,
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
-Widget _page(String title, String intro, List<Widget> rows, IconData emptyIcon, String empty) {
+Widget _page(
+  String title,
+  String intro,
+  List<Widget> rows,
+  IconData emptyIcon,
+  String empty,
+) {
   return Scaffold(
     appBar: AppBar(title: Text(title)),
     body: rows.isEmpty
@@ -97,7 +103,10 @@ Widget _page(String title, String intro, List<Widget> rows, IconData emptyIcon, 
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Text(intro, style: const TextStyle(color: kMuted, fontSize: 14)),
+                child: Text(
+                  intro,
+                  style: const TextStyle(color: kMuted, fontSize: 14),
+                ),
               ),
               ...rows,
             ],
@@ -115,11 +124,12 @@ class CheersScreen extends ConsumerWidget {
     final me = ref.watch(currentUserProvider);
     if (me == null) return const Scaffold();
     final users = ref.watch(usersProvider);
-    final mine = ref
-        .watch(postsProvider)
-        .where((p) => p.authorId == me.id && p.cheeredBy.isNotEmpty)
-        .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final mine =
+        ref
+            .watch(postsProvider)
+            .where((p) => p.authorId == me.id && p.cheeredBy.isNotEmpty)
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     final rows = <Widget>[
       for (final p in mine)
@@ -128,17 +138,30 @@ class CheersScreen extends ConsumerWidget {
           leading: Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(color: kAccentSoft, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: kAccentSoft,
+              shape: BoxShape.circle,
+            ),
             child: const Icon(Icons.favorite, color: kAccentDark),
           ),
           title: Text(
             '${_names([for (final id in p.cheeredBy) users.where((u) => u.id == id).firstOrNull])} cheered your ${_what(p)}',
             style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
           ),
-          subtitle: Text(_snippet(p),
-              maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: kMuted)),
-          trailing: Text('${p.cheeredBy.length}',
-              style: const TextStyle(fontWeight: FontWeight.w800, color: kAccentDark, fontSize: 18)),
+          subtitle: Text(
+            _snippet(p),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: kMuted),
+          ),
+          trailing: Text(
+            '${p.cheeredBy.length}',
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              color: kAccentDark,
+              fontSize: 18,
+            ),
+          ),
         ),
     ];
     return _page(
@@ -171,12 +194,20 @@ class MentionsScreen extends ConsumerWidget {
           row: _Row(
             onTap: () => openPost(context, p.id),
             leading: UserAvatar(user: a, radius: 22),
-            title: Text('${a?.nickname ?? 'Someone'} mentioned you in a ${_what(p)}',
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-            subtitle: MentionText(p.text,
-                maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: kMuted)),
-            trailing: Text(timeAgo(p.createdAt, DateTime.now()),
-                style: const TextStyle(color: kMuted, fontSize: 12)),
+            title: Text(
+              '${a?.nickname ?? 'Someone'} mentioned you in a ${_what(p)}',
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+            subtitle: MentionText(
+              p.text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: kMuted),
+            ),
+            trailing: Text(
+              timeAgo(p.createdAt, DateTime.now()),
+              style: const TextStyle(color: kMuted, fontSize: 12),
+            ),
           ),
         ));
       }
@@ -188,12 +219,23 @@ class MentionsScreen extends ConsumerWidget {
             row: _Row(
               onTap: () => openPost(context, p.id),
               leading: UserAvatar(user: a, radius: 22),
-              title: Text('${a?.nickname ?? 'Someone'} mentioned you in a comment',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-              subtitle: MentionText(c.text,
-                  maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: kMuted)),
-              trailing: Text(timeAgo(c.createdAt, DateTime.now()),
-                  style: const TextStyle(color: kMuted, fontSize: 12)),
+              title: Text(
+                '${a?.nickname ?? 'Someone'} mentioned you in a comment',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+              subtitle: MentionText(
+                c.text,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: kMuted),
+              ),
+              trailing: Text(
+                timeAgo(c.createdAt, DateTime.now()),
+                style: const TextStyle(color: kMuted, fontSize: 12),
+              ),
             ),
           ));
         }
@@ -220,7 +262,8 @@ class CommentsScreen extends ConsumerWidget {
     if (me == null) return const Scaffold();
     final users = ref.watch(usersProvider);
     final items = <({DateTime at, Widget row})>[];
-    for (final p in ref.watch(postsProvider).where((p) => p.authorId == me.id)) {
+    for (final p
+        in ref.watch(postsProvider).where((p) => p.authorId == me.id)) {
       for (final c in p.comments.where((c) => c.authorId != me.id)) {
         final a = users.where((u) => u.id == c.authorId).firstOrNull;
         items.add((
@@ -228,12 +271,20 @@ class CommentsScreen extends ConsumerWidget {
           row: _Row(
             onTap: () => openPost(context, p.id),
             leading: UserAvatar(user: a, radius: 22),
-            title: Text('${a?.nickname ?? 'Someone'} commented on your ${_what(p)}',
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-            subtitle: MentionText(c.text,
-                maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: kMuted)),
-            trailing: Text(timeAgo(c.createdAt, DateTime.now()),
-                style: const TextStyle(color: kMuted, fontSize: 12)),
+            title: Text(
+              '${a?.nickname ?? 'Someone'} commented on your ${_what(p)}',
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+            subtitle: MentionText(
+              c.text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: kMuted),
+            ),
+            trailing: Text(
+              timeAgo(c.createdAt, DateTime.now()),
+              style: const TextStyle(color: kMuted, fontSize: 12),
+            ),
           ),
         ));
       }

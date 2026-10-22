@@ -82,9 +82,6 @@ class KeywordParser {
     } else if (has(r'\b(men only|men-only|boys only|male only)\b')) {
       gender = 'men_only';
     }
-    final accessibility = has(
-      r'\b(wheelchair|stroller|pram|step-free|step free|slow|elderly|accessible|seating|senior)\b',
-    );
     Level? level;
     if (has(r'\b(beginner|beginners|newbie|new to)\b')) {
       level = Level.beginner;
@@ -102,7 +99,6 @@ class KeywordParser {
         weekend ||
         sameGroup ||
         gender != 'none' ||
-        accessibility ||
         level != null ||
         nearMe ||
         has(
@@ -125,7 +121,6 @@ class KeywordParser {
       thisWeekend: weekend,
       sameGroupAge: sameGroup,
       genderFilter: gender,
-      needsAccessibility: accessibility,
       level: level,
       nearMe: nearMe,
     );

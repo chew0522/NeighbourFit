@@ -18,7 +18,9 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
-    final community = ref.watch(referenceProvider).community(me?.communityId ?? '')?.name ?? '';
+    final community =
+        ref.watch(referenceProvider).community(me?.communityId ?? '')?.name ??
+        '';
 
     void go(Widget page) {
       Navigator.of(context).pop(); // close the drawer
@@ -41,8 +43,13 @@ class AppDrawer extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(me?.nickname ?? '',
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                        Text(
+                          me?.nickname ?? '',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                         Text(community, style: const TextStyle(color: kMuted)),
                       ],
                     ),
@@ -59,8 +66,13 @@ class AppDrawer extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.card_giftcard),
               title: const Text('Points & rewards'),
-              trailing: Text('${me?.points ?? 0}',
-                  style: const TextStyle(fontWeight: FontWeight.w800, color: kPrimary)),
+              trailing: Text(
+                '${me?.points ?? 0}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: kPrimary,
+                ),
+              ),
               onTap: () => go(const RewardsScreen()),
             ),
             ListTile(
@@ -89,8 +101,10 @@ class AppDrawer extends ConsumerWidget {
                 children: [
                   AppLogo(size: 32),
                   SizedBox(width: 10),
-                  Text('NeighbourFit · prototype',
-                      style: TextStyle(color: kMuted, fontSize: 13)),
+                  Text(
+                    'NeighbourFit · prototype',
+                    style: TextStyle(color: kMuted, fontSize: 13),
+                  ),
                 ],
               ),
             ),

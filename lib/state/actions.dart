@@ -16,8 +16,6 @@ class AppActions {
 
   final Ref _ref;
 
-  static const joinPoints = 20;
-
   /// "I'm in": joins immediately, adds the user to the group chat and shows an
   /// Undo snackbar.
   Future<void> joinMeetup(Post post) async {
@@ -33,48 +31,16 @@ class AppActions {
     final fresh = posts.byId(post.id)!;
     await _ref.read(chatProvider.notifier).addMember(fresh, me);
 
-    var awarded = false;
-    if (!me.joinAwardIds.contains(post.id)) {
-      await _ref.read(usersProvider.notifier).update(
-            me.id,
-            (u) => u.copyWith(
-              points: u.points + joinPoints,
-              joinAwardIds: [...u.joinAwardIds, post.id],
-            ),
-          );
-      awarded = true;
-      await _ref.read(pointsProvider.notifier).add(
-            userId: me.id,
-            delta: joinPoints,
-            label: 'Joined: ${fresh.title ?? 'a meetup'}',
-            refType: 'join',
-            refId: post.id,
-          );
-    }
-    showSnack(
-      "You're in${awarded ? ' (+$joinPoints points)' : ''}",
-      actionLabel: 'Undo',
-      onAction: () => undoJoin(post, awarded),
-    );
+    showSnack("You're in", actionLabel: 'Undo', onAction: () => undoJoin(post));
   }
 
-  Future<void> undoJoin(Post post, bool awarded) async {
+  Future<void> undoJoin(Post post) async {
     final me = _ref.read(currentUserProvider);
     if (me == null) return;
     await _ref.read(postsProvider.notifier).leave(post.id, me.id);
     await _ref
         .read(chatProvider.notifier)
         .removeMember(post.id, me, announce: false);
-    if (awarded) {
-      await _ref.read(pointsProvider.notifier).removeRef(me.id, 'join', post.id);
-      await _ref.read(usersProvider.notifier).update(
-            me.id,
-            (u) => u.copyWith(
-              points: (u.points - joinPoints).clamp(0, 1 << 30),
-              joinAwardIds: u.joinAwardIds.where((e) => e != post.id).toList(),
-            ),
-          );
-    }
   }
 
   Future<void> leaveMeetup(Post post) async {
@@ -109,6 +75,28 @@ class AppActions {
     return _ref.read(chatProvider.notifier).dmWith(me.id, post.authorId);
   }
 
+  /// "I can lend" on a request: marks it as offered, opens a chat with the
+  /// requester and sends a first line. Returns the chat id, or null if
+  /// somebody offered already.
+  Future<String?> offerToLend(Post post) async {
+    final me = _ref.read(currentUserProvider);
+    if (me == null || post.authorId == me.id) return null;
+    final ok = await _ref.read(postsProvider.notifier).offer(post.id, me.id);
+    if (!ok) {
+      showSnack('A neighbour has already offered to lend this.');
+      return null;
+    }
+    final chat = _ref.read(chatProvider.notifier);
+    final id = await chat.dmWith(me.id, post.authorId);
+    await chat.send(
+      id,
+      me.id,
+      'Hi! I can lend you the ${post.equipmentItem ?? 'item'}. When and where suits you?',
+    );
+    showSnack('Offer sent to the neighbour.');
+    return id;
+  }
+
   Future<void> setLoanStatus(String loanId, LoanStatus s) =>
       _ref.read(loansProvider.notifier).setStatus(loanId, s);
 
@@ -120,18 +108,26 @@ class AppActions {
     if (me == null || other == null) return null;
     final s = _ref.read(peopleMatcherProvider).scorePair(me, other);
     if (s != null) {
-      await _ref.read(logsProvider.notifier).add(RecommendationLog(
-            id: newId('log_'),
-            userId: me.id,
-            kind: 'person',
-            results: [
-              {'userId': other.id, 'score': s.score, 'factors': s.fits}
-            ],
-            actions: [
-              {'userId': other.id, 'action': 'messaged', 'at': DateTime.now().toIso8601String()}
-            ],
-            createdAt: DateTime.now(),
-          ));
+      await _ref
+          .read(logsProvider.notifier)
+          .add(
+            RecommendationLog(
+              id: newId('log_'),
+              userId: me.id,
+              kind: 'person',
+              results: [
+                {'userId': other.id, 'score': s.score, 'factors': s.fits},
+              ],
+              actions: [
+                {
+                  'userId': other.id,
+                  'action': 'messaged',
+                  'at': DateTime.now().toIso8601String(),
+                },
+              ],
+              createdAt: DateTime.now(),
+            ),
+          );
     }
     return startDm(otherId);
   }
@@ -140,18 +136,26 @@ class AppActions {
     final me = _ref.read(currentUserProvider);
     if (me == null) return;
     await _ref.read(usersProvider.notifier).dismissSuggestion(me.id, s.user.id);
-    await _ref.read(logsProvider.notifier).add(RecommendationLog(
-          id: newId('log_'),
-          userId: me.id,
-          kind: 'person',
-          results: [
-            {'userId': s.user.id, 'score': s.score, 'factors': s.fits}
-          ],
-          actions: [
-            {'userId': s.user.id, 'action': 'dismissed', 'at': DateTime.now().toIso8601String()}
-          ],
-          createdAt: DateTime.now(),
-        ));
+    await _ref
+        .read(logsProvider.notifier)
+        .add(
+          RecommendationLog(
+            id: newId('log_'),
+            userId: me.id,
+            kind: 'person',
+            results: [
+              {'userId': s.user.id, 'score': s.score, 'factors': s.fits},
+            ],
+            actions: [
+              {
+                'userId': s.user.id,
+                'action': 'dismissed',
+                'at': DateTime.now().toIso8601String(),
+              },
+            ],
+            createdAt: DateTime.now(),
+          ),
+        );
   }
 }
 

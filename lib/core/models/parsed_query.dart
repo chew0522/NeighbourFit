@@ -27,7 +27,6 @@ class ParsedQuery {
     this.thisWeekend = false,
     this.sameGroupAge = false,
     this.genderFilter = 'none',
-    this.needsAccessibility = false,
     this.level,
     this.nearMe = false,
     this.equipmentItem,
@@ -44,26 +43,24 @@ class ParsedQuery {
 
   /// 'none', 'women_only' or 'men_only'
   final String genderFilter;
-  final bool needsAccessibility;
   final Level? level;
   final bool nearMe;
   final String? equipmentItem;
 
   Map<String, dynamic> toJson() => {
-        'intent': intent.json,
-        'sport': sport?.name,
-        'timeSlot': timeSlot?.name,
-        'date': date == null
-            ? null
-            : '${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}',
-        'dayHint': thisWeekend ? 'this_weekend' : null,
-        'agePref': sameGroupAge ? 'same_group' : 'any',
-        'genderFilter': genderFilter,
-        'needsAccessibility': needsAccessibility,
-        'level': level?.name,
-        'nearMe': nearMe,
-        'equipmentItem': equipmentItem,
-      };
+    'intent': intent.json,
+    'sport': sport?.name,
+    'timeSlot': timeSlot?.name,
+    'date': date == null
+        ? null
+        : '${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}',
+    'dayHint': thisWeekend ? 'this_weekend' : null,
+    'agePref': sameGroupAge ? 'same_group' : 'any',
+    'genderFilter': genderFilter,
+    'level': level?.name,
+    'nearMe': nearMe,
+    'equipmentItem': equipmentItem,
+  };
 
   /// Validates AI output: unknown values become null / defaults, dates in the
   /// past are ignored, unknown fields are dropped.
@@ -87,11 +84,14 @@ class ParsedQuery {
       date: date,
       thisWeekend: j['dayHint'] == 'this_weekend',
       sameGroupAge: j['agePref'] == 'same_group',
-      genderFilter: (gf == 'women_only' || gf == 'men_only') ? gf as String : 'none',
-      needsAccessibility: j['needsAccessibility'] == true,
+      genderFilter: (gf == 'women_only' || gf == 'men_only')
+          ? gf as String
+          : 'none',
       level: enumByName(Level.values, j['level']),
       nearMe: j['nearMe'] == true,
-      equipmentItem: item is String && item.trim().isNotEmpty ? item.trim() : null,
+      equipmentItem: item is String && item.trim().isNotEmpty
+          ? item.trim()
+          : null,
     );
   }
 }

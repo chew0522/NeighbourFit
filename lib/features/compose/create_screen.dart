@@ -9,7 +9,7 @@ enum CreateMode {
   workout('Workout', 'Share a workout'),
   meals('Meals', 'Share a healthy meal'),
   meetup('Meetup', 'Start a meetup'),
-  equipment('Equipment', 'Lend equipment');
+  equipment('Equipment', 'Lend or request equipment');
 
   const CreateMode(this.label, this.title);
   final String label;
@@ -17,20 +17,33 @@ enum CreateMode {
 }
 
 /// Opens the create page (the ＋ button). Slides up as a full page.
-Future<void> openCreate(BuildContext context, {CreateMode initial = CreateMode.workout}) {
-  return Navigator.of(context).push(MaterialPageRoute<void>(
-    fullscreenDialog: true,
-    builder: (_) => CreateScreen(initial: initial),
-  ));
+Future<void> openCreate(
+  BuildContext context, {
+  CreateMode initial = CreateMode.workout,
+  String? requestItem,
+}) {
+  return Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      fullscreenDialog: true,
+      builder: (_) => CreateScreen(initial: initial, requestItem: requestItem),
+    ),
+  );
 }
 
 /// Full page with the four create forms. A strip of words at the bottom, like
 /// the Post / Story switch on Instagram, picks the form: the chosen word sits
 /// in the middle, the others fade out towards the edges.
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key, this.initial = CreateMode.workout});
+  const CreateScreen({
+    super.key,
+    this.initial = CreateMode.workout,
+    this.requestItem,
+  });
 
   final CreateMode initial;
+
+  /// Opens the equipment form on "I need to borrow" with this item.
+  final String? requestItem;
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -60,8 +73,11 @@ class _CreateScreenState extends State<CreateScreen> {
     if (i == _index) return;
     FocusScope.of(context).unfocus();
     setState(() => _index = i);
-    _content.animateToPage(i,
-        duration: const Duration(milliseconds: 280), curve: Curves.easeOutCubic);
+    _content.animateToPage(
+      i,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -77,7 +93,11 @@ class _CreateScreenState extends State<CreateScreen> {
         ),
         title: AnimatedSwitcher(
           duration: const Duration(milliseconds: 180),
-          child: Text(mode.title, key: ValueKey(mode), style: const TextStyle(fontSize: 20)),
+          child: Text(
+            mode.title,
+            key: ValueKey(mode),
+            style: const TextStyle(fontSize: 20),
+          ),
         ),
       ),
       body: SafeArea(
@@ -89,11 +109,13 @@ class _CreateScreenState extends State<CreateScreen> {
                 // Only the strip changes the form, so a swipe never loses
                 // what you typed.
                 physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  _KeepAlive(child: WorkoutForm()),
-                  _KeepAlive(child: MealForm()),
-                  _KeepAlive(child: MeetupForm()),
-                  _KeepAlive(child: EquipmentForm()),
+                children: [
+                  const _KeepAlive(child: WorkoutForm()),
+                  const _KeepAlive(child: MealForm()),
+                  const _KeepAlive(child: MeetupForm()),
+                  _KeepAlive(
+                    child: EquipmentForm(requestItem: widget.requestItem),
+                  ),
                 ],
               ),
             ),
@@ -103,7 +125,12 @@ class _CreateScreenState extends State<CreateScreen> {
                 child: ShaderMask(
                   blendMode: BlendMode.dstIn,
                   shaderCallback: (rect) => const LinearGradient(
-                    colors: [Colors.transparent, Colors.black, Colors.black, Colors.transparent],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black,
+                      Colors.black,
+                      Colors.transparent,
+                    ],
                     stops: [0.0, 0.2, 0.8, 1.0],
                   ).createShader(rect),
                   child: PageView.builder(
@@ -113,8 +140,11 @@ class _CreateScreenState extends State<CreateScreen> {
                     itemBuilder: (_, i) => _StripLabel(
                       mode: CreateMode.values[i],
                       selected: i == _index,
-                      onTap: () => _strip.animateToPage(i,
-                          duration: const Duration(milliseconds: 260), curve: Curves.easeOutCubic),
+                      onTap: () => _strip.animateToPage(
+                        i,
+                        duration: const Duration(milliseconds: 260),
+                        curve: Curves.easeOutCubic,
+                      ),
                     ),
                   ),
                 ),
@@ -127,7 +157,11 @@ class _CreateScreenState extends State<CreateScreen> {
 }
 
 class _StripLabel extends StatelessWidget {
-  const _StripLabel({required this.mode, required this.selected, required this.onTap});
+  const _StripLabel({
+    required this.mode,
+    required this.selected,
+    required this.onTap,
+  });
 
   final CreateMode mode;
   final bool selected;
@@ -155,7 +189,10 @@ class _StripLabel extends StatelessWidget {
             duration: const Duration(milliseconds: 180),
             width: selected ? 6 : 0,
             height: selected ? 6 : 0,
-            decoration: const BoxDecoration(color: kPrimary, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: kPrimary,
+              shape: BoxShape.circle,
+            ),
           ),
         ],
       ),
@@ -173,7 +210,8 @@ class _KeepAlive extends StatefulWidget {
   State<_KeepAlive> createState() => _KeepAliveState();
 }
 
-class _KeepAliveState extends State<_KeepAlive> with AutomaticKeepAliveClientMixin {
+class _KeepAliveState extends State<_KeepAlive>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 

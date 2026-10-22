@@ -4,21 +4,13 @@
     { "id": "c_lakeside", "name": "Lakeside Residences", "scale": 1.0, "lat": 3.1000, "lng": 101.6000 }
   ],
   "locations": [
-    { "id": "loc_lakeside_park", "name": "Lakeside Park entrance", "communityId": "c_lakeside", "lat": 3.1005, "lng": 101.6003,
-      "accessibilityNotes": "Step-free path, benches, shade" },
-    { "id": "loc_lakeside_track", "name": "Lakeside jogging track", "communityId": "c_lakeside", "lat": 3.1020, "lng": 101.5985,
-      "accessibilityNotes": "Paved loop, some shade" },
-    { "id": "loc_lakeside_clubhouse", "name": "Lakeside Clubhouse", "communityId": "c_lakeside", "lat": 3.0996, "lng": 101.6008,
-      "accessibilityNotes": "Step-free, toilets, seating, pool and gym inside" },
-    { "id": "loc_lakeside_field", "name": "Lakeside Community Field", "communityId": "c_lakeside", "lat": 3.1012, "lng": 101.6020,
-      "accessibilityNotes": "Step-free path, benches, shade, toilets nearby" },
-    { "id": "loc_lakeside_court", "name": "Lakeside Badminton Court", "communityId": "c_lakeside", "lat": 3.0990, "lng": 101.6018,
-      "accessibilityNotes": "Indoor court, lift access" },
-    { "id": "loc_lakeside_playground", "name": "Lakeside Playground loop", "communityId": "c_lakeside", "lat": 3.1008, "lng": 101.6030,
-      "accessibilityNotes": "Stroller-friendly loop, benches" },
-    { "id": "loc_lakeside_garden", "name": "Lakeside Community Garden", "communityId": "c_lakeside", "lat": 3.0985, "lng": 101.5990,
-      "accessibilityNotes": "Benches every 100 m, shade, toilets" },
-    { "id": "loc_lakeside_cycle", "name": "Lakeside Cycling Loop", "communityId": "c_lakeside", "lat": 3.1030, "lng": 101.6005,
-      "accessibilityNotes": "Sealed road, gentle slopes" }
+    { "id": "loc_lakeside_park", "name": "Lakeside Park entrance", "communityId": "c_lakeside", "lat": 3.1005, "lng": 101.6003 },
+    { "id": "loc_lakeside_track", "name": "Lakeside jogging track", "communityId": "c_lakeside", "lat": 3.1020, "lng": 101.5985 },
+    { "id": "loc_lakeside_clubhouse", "name": "Lakeside Clubhouse", "communityId": "c_lakeside", "lat": 3.0996, "lng": 101.6008 },
+    { "id": "loc_lakeside_field", "name": "Lakeside Community Field", "communityId": "c_lakeside", "lat": 3.1012, "lng": 101.6020 },
+    { "id": "loc_lakeside_court", "name": "Lakeside Badminton Court", "communityId": "c_lakeside", "lat": 3.0990, "lng": 101.6018 },
+    { "id": "loc_lakeside_playground", "name": "Lakeside Playground loop", "communityId": "c_lakeside", "lat": 3.1008, "lng": 101.6030 },
+    { "id": "loc_lakeside_garden", "name": "Lakeside Community Garden", "communityId": "c_lakeside", "lat": 3.0985, "lng": 101.5990 },
+    { "id": "loc_lakeside_cycle", "name": "Lakeside Cycling Loop", "communityId": "c_lakeside", "lat": 3.1030, "lng": 101.6005 }
   ]
 }

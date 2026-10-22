@@ -127,7 +127,8 @@ ScoreBreakdown scoreActivity(
 
   final distance = 1 / (1 + c.km);
   final age = x.userAge == null ? 0.5 : ageFit(x.userAge, c.ageGroup);
-  final levelLang = (levelFit(x.userLevel, c.level) +
+  final levelLang =
+      (levelFit(x.userLevel, c.level) +
           languageFit(x.userLanguages, c.languages)) /
       2;
 
@@ -202,7 +203,9 @@ class MatchingEngine {
         return _equipment(q, d, limit);
       case QueryIntent.challengeInfo:
         return d.challenges
-            .where((c) => c.isActive(d.now) && c.communityId == d.me.communityId)
+            .where(
+              (c) => c.isActive(d.now) && c.communityId == d.me.communityId,
+            )
             .map((c) => ScoredResult(challenge: c, score: 100 * c.fraction))
             .toList()
           ..sort((a, b) => b.score.compareTo(a.score));
@@ -244,13 +247,13 @@ class MatchingEngine {
         if (!weekendDates.any((w) => sameDay(w, start))) continue;
       }
       if (q.timeSlot != null && !slotsFor(start).contains(q.timeSlot)) continue;
-      if (q.needsAccessibility &&
-          !p.accessibilityFriendly) {
-        continue;
-      }
       if (q.genderFilter != 'none') {
-        final want = q.genderFilter == 'women_only' ? Gender.female : Gender.male;
-        if (author == null || !author.isVisible('gender') || author.gender != want) {
+        final want = q.genderFilter == 'women_only'
+            ? Gender.female
+            : Gender.male;
+        if (author == null ||
+            !author.isVisible('gender') ||
+            author.gender != want) {
           continue;
         }
       }
@@ -299,12 +302,14 @@ class MatchingEngine {
         nearMe: q.nearMe,
       );
       final s = scoreActivity(fit, ctx, config);
-      results.add(ScoredResult(
-        post: p,
-        score: s.total,
-        fits: s.fits,
-        facts: _facts(s, q, km, p, age),
-      ));
+      results.add(
+        ScoredResult(
+          post: p,
+          score: s.total,
+          fits: s.fits,
+          facts: _facts(s, q, km, p, age),
+        ),
+      );
     }
 
     results.sort((a, b) {
@@ -330,21 +335,24 @@ class MatchingEngine {
         case 'sport':
           out.add(e.value >= 1 ? 'same sport' : 'a similar activity');
         case 'time':
-          out.add(q.timeSlot != null
-              ? '${q.timeSlot!.label.toLowerCase()} slot matches'
-              : 'fits your usual times');
+          out.add(
+            q.timeSlot != null
+                ? '${q.timeSlot!.label.toLowerCase()} slot matches'
+                : 'fits your usual times',
+          );
         case 'distance':
           out.add('only ${km.toStringAsFixed(1)} km away');
         case 'age':
-          out.add(age == null ? 'similar age group' : 'mostly ${age.label} year olds');
+          out.add(
+            age == null ? 'similar age group' : 'mostly ${age.label} year olds',
+          );
         case 'levelLanguage':
-          out.add(p.level == null
-              ? 'open to all levels'
-              : '${p.level!.label.toLowerCase()} level fits');
+          out.add(
+            p.level == null
+                ? 'open to all levels'
+                : '${p.level!.label.toLowerCase()} level fits',
+          );
       }
-    }
-    if (p.accessibilityFriendly && (q.needsAccessibility)) {
-      out.insert(0, 'accessibility-friendly');
     }
     return out.take(3).toList();
   }
@@ -356,7 +364,7 @@ class MatchingEngine {
         : item.split(RegExp(r'\s+')).where((t) => t.length > 2).toList();
     final results = <ScoredResult>[];
     for (final p in d.posts) {
-      if (p.type != PostType.equipment) continue;
+      if (p.type != PostType.equipment || p.isRequest) continue;
       if (p.authorId == d.me.id) continue;
       if (d.me.blockedUserIds.contains(p.authorId)) continue;
       if (d.loans.any((l) => l.postId == p.id && l.holdsItem)) continue;
@@ -375,14 +383,19 @@ class MatchingEngine {
       final km = (other == null || home == null)
           ? 1.0
           : haversineKm(home.lat, home.lng, other.lat, other.lng);
-      results.add(ScoredResult(
-        post: p,
-        score: match * 100 - km,
-        facts: [
-          if (match >= 1) 'matches what you asked for' else 'partly matches',
-          if (km < 0.5) 'in your community' else '${km.toStringAsFixed(1)} km away',
-        ],
-      ));
+      results.add(
+        ScoredResult(
+          post: p,
+          score: match * 100 - km,
+          facts: [
+            if (match >= 1) 'matches what you asked for' else 'partly matches',
+            if (km < 0.5)
+              'in your community'
+            else
+              '${km.toStringAsFixed(1)} km away',
+          ],
+        ),
+      );
     }
     results.sort((a, b) => b.score.compareTo(a.score));
     return results.take(limit).toList();

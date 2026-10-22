@@ -210,7 +210,7 @@ class DetailActionBar extends StatelessWidget {
   );
 }
 
-/// Place name, accessibility notes and a Google Maps button.
+/// Place name and a Google Maps button.
 class WherePanel extends StatelessWidget {
   const WherePanel({super.key, required this.location});
 
@@ -236,14 +236,6 @@ class WherePanel extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  if (location.accessibilityNotes.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        location.accessibilityNotes,
-                        style: const TextStyle(color: kMuted, fontSize: 14),
-                      ),
-                    ),
                 ],
               ),
             ),

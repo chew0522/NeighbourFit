@@ -38,15 +38,15 @@ class RecommendationLog {
       );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'userId': userId,
-        'kind': kind,
-        'query': query,
-        'parsed': parsed,
-        'results': results,
-        'actions': actions,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'userId': userId,
+    'kind': kind,
+    'query': query,
+    'parsed': parsed,
+    'results': results,
+    'actions': actions,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory RecommendationLog.fromJson(Map<String, dynamic> j) =>
       RecommendationLog(

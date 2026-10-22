@@ -37,7 +37,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   int _step = 0; // 0 about, 1 likes, 2 when, 3 optional, 4 done
 
   final _nickname = TextEditingController();
-  final _emergency = TextEditingController();
   int? _avatar;
   AgeGroup? _age;
   String? _community;
@@ -58,7 +57,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
     final e = widget.editing;
     if (e != null) {
       _nickname.text = e.nickname;
-      _emergency.text = e.emergencyContactName ?? '';
       _avatar = e.avatarColor;
       _age = e.ageGroup;
       _community = e.communityId;
@@ -77,7 +75,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   @override
   void dispose() {
     _nickname.dispose();
-    _emergency.dispose();
     super.dispose();
   }
 
@@ -119,7 +116,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
 
   Future<void> _finish() async {
     final users = ref.read(usersProvider.notifier);
-    final emergency = _emergency.text.trim();
     if (_editing) {
       await users.update(
         widget.editing!.id,
@@ -135,8 +131,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
           timeSlots: _slots.toList(),
           agePref: _agePref!,
           genderPref: _genderPref,
-          emergencyContactName: emergency.isEmpty ? null : emergency,
-          clearEmergencyContact: emergency.isEmpty,
         ),
       );
       if (mounted) Navigator.of(context).pop();
@@ -156,7 +150,6 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       timeSlots: _slots.toList(),
       agePref: _agePref!,
       genderPref: _genderPref,
-      emergencyContactName: emergency.isEmpty ? null : emergency,
       createdAt: DateTime.now(),
     );
     await users.upsert(u);
@@ -174,7 +167,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   Widget build(BuildContext context) {
     final last = _step == 4;
     return Scaffold(
-      appBar: AppBar(title: Text(_editing ? 'Edit profile' : 'Create your profile')),
+      appBar: AppBar(
+        title: Text(_editing ? 'Edit profile' : 'Create your profile'),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -189,8 +184,13 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                     if (_error != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 12),
-                        child: Text(_error!,
-                            style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 15)),
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(
+                            color: Color(0xFFB91C1C),
+                            fontSize: 15,
+                          ),
+                        ),
                       ),
                   ],
                 ),
@@ -211,7 +211,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                   const Spacer(),
                   FilledButton(
                     onPressed: last ? _finish : _next,
-                    child: Text(last ? (_editing ? 'Save' : "Let's go") : 'Next'),
+                    child: Text(
+                      last ? (_editing ? 'Save' : "Let's go") : 'Next',
+                    ),
                   ),
                 ],
               ),
@@ -238,15 +240,18 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   }
 
   Widget _title(String t, [String? sub]) => Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(t, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-            if (sub != null) Text(sub, style: const TextStyle(color: kMuted)),
-          ],
+    padding: const EdgeInsets.only(top: 8, bottom: 4),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          t,
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
-      );
+        if (sub != null) Text(sub, style: const TextStyle(color: kMuted)),
+      ],
+    ),
+  );
 
   Widget _about() {
     final communities = ref.read(referenceProvider).communities;
@@ -255,8 +260,13 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
       children: [
         _title('About you', 'Just the basics.'),
         const FieldLabel('Nickname'),
-        TextField(controller: _nickname, textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(hintText: 'What should neighbours call you?')),
+        TextField(
+          controller: _nickname,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(
+            hintText: 'What should neighbours call you?',
+          ),
+        ),
         const FieldLabel('Avatar colour'),
         Wrap(
           spacing: 10,
@@ -272,7 +282,9 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
                     color: Color(c),
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: _avatar == c ? kText : Colors.transparent, width: 3),
+                      color: _avatar == c ? kText : Colors.transparent,
+                      width: 3,
+                    ),
                   ),
                 ),
               ),
@@ -292,8 +304,10 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
           ],
         ),
         const SizedBox(height: 6),
-        const Text('NeighbourFit is for residents aged 18 and over.',
-            style: TextStyle(color: kMuted, fontSize: 14)),
+        const Text(
+          'NeighbourFit is for residents aged 18 and over.',
+          style: TextStyle(color: kMuted, fontSize: 14),
+        ),
         const FieldLabel('Community'),
         Wrap(
           spacing: 8,
@@ -312,132 +326,131 @@ class _WizardScreenState extends ConsumerState<WizardScreen> {
   }
 
   Widget _likes() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _title('What do you like?', 'Pick as many as you want.'),
+      const FieldLabel('Sports'),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
-          _title('What do you like?', 'Pick as many as you want.'),
-          const FieldLabel('Sports'),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final s in Sport.values.where((s) => s != Sport.other))
-                FilterChip(
-                  label: Text(s.label),
-                  selected: _sports.contains(s),
-                  onSelected: (v) => setState(() => v ? _sports.add(s) : _sports.remove(s)),
-                ),
-            ],
-          ),
-          const FieldLabel('Your level'),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final l in Level.values)
-                ChoiceChip(
-                  label: Text(l.label),
-                  selected: _level == l,
-                  onSelected: (_) => setState(() => _level = l),
-                ),
-            ],
-          ),
+          for (final s in Sport.values.where((s) => s != Sport.other))
+            FilterChip(
+              label: Text(s.label),
+              selected: _sports.contains(s),
+              onSelected: (v) =>
+                  setState(() => v ? _sports.add(s) : _sports.remove(s)),
+            ),
         ],
-      );
+      ),
+      const FieldLabel('Your level'),
+      Wrap(
+        spacing: 8,
+        children: [
+          for (final l in Level.values)
+            ChoiceChip(
+              label: Text(l.label),
+              selected: _level == l,
+              onSelected: (_) => setState(() => _level = l),
+            ),
+        ],
+      ),
+    ],
+  );
 
   Widget _when() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _title('When and how?', 'So we can find people on your schedule.'),
+      const FieldLabel('Usual times'),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
-          _title('When and how?', 'So we can find people on your schedule.'),
-          const FieldLabel('Usual times'),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final t in TimeSlot.values)
-                FilterChip(
-                  label: Text(t.label),
-                  selected: _slots.contains(t),
-                  onSelected: (v) => setState(() => v ? _slots.add(t) : _slots.remove(t)),
-                ),
-            ],
-          ),
-          const FieldLabel('Languages you speak'),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final e in languageLabels.entries)
-                FilterChip(
-                  label: Text(e.value),
-                  selected: _langs.contains(e.key),
-                  onSelected: (v) => setState(() => v ? _langs.add(e.key) : _langs.remove(e.key)),
-                ),
-            ],
-          ),
+          for (final t in TimeSlot.values)
+            FilterChip(
+              label: Text(t.label),
+              selected: _slots.contains(t),
+              onSelected: (v) =>
+                  setState(() => v ? _slots.add(t) : _slots.remove(t)),
+            ),
         ],
-      );
+      ),
+      const FieldLabel('Languages you speak'),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final e in languageLabels.entries)
+            FilterChip(
+              label: Text(e.value),
+              selected: _langs.contains(e.key),
+              onSelected: (v) =>
+                  setState(() => v ? _langs.add(e.key) : _langs.remove(e.key)),
+            ),
+        ],
+      ),
+    ],
+  );
 
   Widget _optional() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _title('A few more things', 'Choose one in each row.'),
+      const FieldLabel('Gender'),
+      Wrap(
+        spacing: 8,
         children: [
-          _title('A few more things', 'Choose one in each row. Only the emergency contact is optional.'),
-          const FieldLabel('Gender'),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (final g in Gender.values)
-                ChoiceChip(
-                  label: Text(g.label),
-                  selected: _gender == g,
-                  onSelected: (_) => setState(() => _gender = g),
-                ),
-            ],
+          for (final g in Gender.values)
+            ChoiceChip(
+              label: Text(g.label),
+              selected: _gender == g,
+              onSelected: (_) => setState(() => _gender = g),
+            ),
+        ],
+      ),
+      const FieldLabel('Neighbours you would like to meet'),
+      Wrap(
+        spacing: 8,
+        children: [
+          ChoiceChip(
+            label: const Text('Similar age'),
+            selected: _agePref == 'same',
+            onSelected: (_) => setState(() => _agePref = 'same'),
           ),
-          const FieldLabel('Neighbours you would like to meet'),
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: const Text('Similar age'),
-                selected: _agePref == 'same',
-                onSelected: (_) => setState(() => _agePref = 'same'),
-              ),
-              ChoiceChip(
-                label: const Text('Any age'),
-                selected: _agePref == 'any',
-                onSelected: (_) => setState(() => _agePref = 'any'),
-              ),
-            ],
-          ),
-          const FieldLabel('Emergency contact (name only, optional)'),
-          TextField(
-            controller: _emergency,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(hintText: 'Someone we can mention for safe buddy'),
+          ChoiceChip(
+            label: const Text('Any age'),
+            selected: _agePref == 'any',
+            onSelected: (_) => setState(() => _agePref = 'any'),
           ),
         ],
-      );
+      ),
+    ],
+  );
 
   Widget _done() => Padding(
-        padding: const EdgeInsets.only(top: 40),
-        child: Center(
-          child: Column(
-            children: [
-              const Icon(Icons.check_circle, size: 72, color: kGreen),
-              const SizedBox(height: 16),
-              Text(_editing ? 'All changes ready' : "You're all set!",
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 8),
-              Text(
-                _editing
-                    ? 'Tap Save to update your profile.'
-                    : 'Your neighbours are waiting. Find a meetup or start one.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: kMuted),
-              ),
-            ],
+    padding: const EdgeInsets.only(top: 40),
+    child: Center(
+      child: Column(
+        children: [
+          const Icon(Icons.check_circle, size: 72, color: kGreen),
+          const SizedBox(height: 16),
+          Text(
+            _editing ? 'All changes ready' : "You're all set!",
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
           ),
-        ),
-      );
+          const SizedBox(height: 8),
+          Text(
+            _editing
+                ? 'Tap Save to update your profile.'
+                : 'Your neighbours are waiting. Find a meetup or start one.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, color: kMuted),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _Dots extends StatelessWidget {
@@ -448,21 +461,21 @@ class _Dots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (var i = 1; i <= total; i++)
-              Container(
-                width: i == active ? 22 : 10,
-                height: 10,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: i <= active ? kPrimary : kBorder,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-          ],
-        ),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 1; i <= total; i++)
+          Container(
+            width: i == active ? 22 : 10,
+            height: 10,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              color: i <= active ? kPrimary : kBorder,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+      ],
+    ),
+  );
 }

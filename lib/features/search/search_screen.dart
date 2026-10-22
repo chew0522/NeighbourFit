@@ -56,19 +56,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     List<UserProfile> people = const [];
     if (me != null && q.isNotEmpty) {
       posts = ref.watch(postsProvider).where((p) {
-        if (p.communityId != me.communityId || p.type == PostType.challenge) return false;
+        if (p.communityId != me.communityId || p.type == PostType.challenge) {
+          return false;
+        }
         if (me.blockedUserIds.contains(p.authorId)) return false;
         final author = users.where((u) => u.id == p.authorId).firstOrNull;
-        return _postMatches(p, q, author, reference.location(p.locationId)?.name ?? '');
-      }).toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return _postMatches(
+          p,
+          q,
+          author,
+          reference.location(p.locationId)?.name ?? '',
+        );
+      }).toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
       people = users
-          .where((u) =>
-              u.id != me.id &&
-              u.communityId == me.communityId &&
-              !me.blockedUserIds.contains(u.id) &&
-              !u.blockedUserIds.contains(me.id) &&
-              u.nickname.toLowerCase().contains(q))
+          .where(
+            (u) =>
+                u.id != me.id &&
+                u.communityId == me.communityId &&
+                !me.blockedUserIds.contains(u.id) &&
+                !u.blockedUserIds.contains(me.id) &&
+                u.nickname.toLowerCase().contains(q),
+          )
           .toList();
     }
 
@@ -103,7 +111,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ? ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const Text('Try searching for', style: TextStyle(color: kMuted)),
+                const Text(
+                  'Try searching for',
+                  style: TextStyle(color: kMuted),
+                ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -121,18 +132,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
                 const SizedBox(height: 20),
                 if (suggestions.isNotEmpty) ...[
-                  const Text('Neighbours you may like',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const Text(
+                    'Neighbours you may like',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
                   const SizedBox(height: 2),
-                  const Text('Based on the sports, times and age group you chose.',
-                      style: TextStyle(color: kMuted, fontSize: 14)),
+                  const Text(
+                    'Based on the sports, times and age group you chose.',
+                    style: TextStyle(color: kMuted, fontSize: 14),
+                  ),
                   const SizedBox(height: 10),
                   for (final s in suggestions)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: NeighbourRow(
                         user: s.user,
-                        subtitle: s.reasons.isEmpty ? 'Lives nearby' : s.reasons.join(' · '),
+                        subtitle: s.reasons.isEmpty
+                            ? 'Lives nearby'
+                            : s.reasons.join(' · '),
                         onTap: () => openProfile(context, s.user.id),
                       ),
                     ),
@@ -140,38 +157,47 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ],
             )
           : (posts.isEmpty && people.isEmpty)
-              ? const EmptyState(
-                  icon: Icons.search_off, message: 'No results. Try another word.')
-              : ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                  children: [
-                    if (people.isNotEmpty) ...[
-                      const Text('Neighbours',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 8),
-                      for (final u in people)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: NeighbourRow(
-                            user: u,
-                            subtitle: u.sports.map((s) => s.label).join(' · '),
-                            onTap: () => openProfile(context, u.id),
-                          ),
-                        ),
-                      const SizedBox(height: 12),
-                    ],
-                    if (posts.isNotEmpty) ...[
-                      Text('Posts (${posts.length})',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 8),
-                      for (final p in posts)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: PostCard(key: ValueKey(p.id), post: p),
-                        ),
-                    ],
-                  ],
-                ),
+          ? const EmptyState(
+              icon: Icons.search_off,
+              message: 'No results. Try another word.',
+            )
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              children: [
+                if (people.isNotEmpty) ...[
+                  const Text(
+                    'Neighbours',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 8),
+                  for (final u in people)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: NeighbourRow(
+                        user: u,
+                        subtitle: u.sports.map((s) => s.label).join(' · '),
+                        onTap: () => openProfile(context, u.id),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                ],
+                if (posts.isNotEmpty) ...[
+                  Text(
+                    'Posts (${posts.length})',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  for (final p in posts)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: PostCard(key: ValueKey(p.id), post: p),
+                    ),
+                ],
+              ],
+            ),
     );
   }
 }

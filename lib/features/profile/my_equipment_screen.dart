@@ -26,7 +26,8 @@ String _statusLabel(LoanStatus s) {
   }
 }
 
-/// Items I lend, requests for them, and items I am borrowing.
+/// Items I lend, requests for them, my own requests, requests I offered to
+/// help with, and items I am borrowing.
 class MyEquipmentScreen extends ConsumerWidget {
   const MyEquipmentScreen({super.key});
 
@@ -38,21 +39,49 @@ class MyEquipmentScreen extends ConsumerWidget {
     final loans = ref.watch(loansProvider);
     final actions = ref.read(appActionsProvider);
 
-    final mine = posts.where((p) => p.type == PostType.equipment && p.authorId == me.id).toList();
-    final incoming = loans.where((l) => l.ownerId == me.id && l.isOpen).toList();
-    final borrowing = loans.where((l) => l.borrowerId == me.id && l.isOpen).toList();
+    final mine = posts
+        .where(
+          (p) =>
+              p.type == PostType.equipment &&
+              !p.isRequest &&
+              p.authorId == me.id,
+        )
+        .toList();
+    final myRequests = posts
+        .where(
+          (p) =>
+              p.type == PostType.equipment &&
+              p.isRequest &&
+              p.authorId == me.id,
+        )
+        .toList();
+    final helping = posts
+        .where((p) => p.isRequest && p.offeredBy == me.id)
+        .toList();
+    final incoming = loans
+        .where((l) => l.ownerId == me.id && l.isOpen)
+        .toList();
+    final borrowing = loans
+        .where((l) => l.borrowerId == me.id && l.isOpen)
+        .toList();
     final past = loans
-        .where((l) => (l.ownerId == me.id || l.borrowerId == me.id) && !l.isOpen)
+        .where(
+          (l) => (l.ownerId == me.id || l.borrowerId == me.id) && !l.isOpen,
+        )
         .toList();
 
     String itemName(String postId) =>
         posts.where((p) => p.id == postId).firstOrNull?.equipmentItem ?? 'Item';
-    String name(String id) => ref.watch(userByIdProvider(id))?.nickname ?? 'Neighbour';
+    String name(String id) =>
+        ref.watch(userByIdProvider(id))?.nickname ?? 'Neighbour';
 
     Widget header(String t) => Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 8),
-          child: Text(t, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-        );
+      padding: const EdgeInsets.only(top: 20, bottom: 8),
+      child: Text(
+        t,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('My equipment')),
@@ -61,7 +90,10 @@ class MyEquipmentScreen extends ConsumerWidget {
         children: [
           header('Requests for my items'),
           if (incoming.isEmpty)
-            const Text('No requests right now.', style: TextStyle(color: kMuted)),
+            const Text(
+              'No requests right now.',
+              style: TextStyle(color: kMuted),
+            ),
           for (final l in incoming)
             Card(
               child: Padding(
@@ -69,38 +101,60 @@ class MyEquipmentScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${name(l.borrowerId)} · ${itemName(l.postId)}',
-                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                    Text(_statusLabel(l.status), style: const TextStyle(color: kMuted)),
+                    Text(
+                      '${name(l.borrowerId)} · ${itemName(l.postId)}',
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      _statusLabel(l.status),
+                      style: const TextStyle(color: kMuted),
+                    ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
                         if (l.status == LoanStatus.requested) ...[
                           FilledButton(
-                            onPressed: () => actions.setLoanStatus(l.id, LoanStatus.approved),
+                            onPressed: () => actions.setLoanStatus(
+                              l.id,
+                              LoanStatus.approved,
+                            ),
                             child: const Text('Approve'),
                           ),
                           const SizedBox(width: 8),
                           OutlinedButton(
-                            onPressed: () => actions.setLoanStatus(l.id, LoanStatus.declined),
+                            onPressed: () => actions.setLoanStatus(
+                              l.id,
+                              LoanStatus.declined,
+                            ),
                             child: const Text('Decline'),
                           ),
                         ],
                         if (l.status == LoanStatus.approved)
                           FilledButton(
-                            onPressed: () => actions.setLoanStatus(l.id, LoanStatus.pickedUp),
+                            onPressed: () => actions.setLoanStatus(
+                              l.id,
+                              LoanStatus.pickedUp,
+                            ),
                             child: const Text('Mark picked up'),
                           ),
                         if (l.status == LoanStatus.pickedUp)
                           FilledButton(
-                            onPressed: () => actions.setLoanStatus(l.id, LoanStatus.returned),
+                            onPressed: () => actions.setLoanStatus(
+                              l.id,
+                              LoanStatus.returned,
+                            ),
                             child: const Text('Mark returned'),
                           ),
                         const Spacer(),
                         TextButton(
                           onPressed: () async {
                             final id = await actions.startDm(l.borrowerId);
-                            if (id != null && context.mounted) openChat(context, id);
+                            if (id != null && context.mounted) {
+                              openChat(context, id);
+                            }
                           },
                           child: const Text('Message'),
                         ),
@@ -112,33 +166,114 @@ class MyEquipmentScreen extends ConsumerWidget {
             ),
           header('Items I lend'),
           if (mine.isEmpty)
-            const Text('Tap ＋ then "Lend equipment" to list something.',
-                style: TextStyle(color: kMuted)),
+            const Text(
+              'Tap ＋, choose Equipment and "I can lend" to list something.',
+              style: TextStyle(color: kMuted),
+            ),
           for (final p in mine)
             Card(
               child: ListTile(
                 leading: const Icon(Icons.handyman, color: kPrimary),
-                title: Text(p.equipmentItem ?? 'Item',
-                    style: const TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text(loans.any((l) => l.postId == p.id && l.holdsItem)
-                    ? 'On loan'
-                    : 'Available'),
+                title: Text(
+                  p.equipmentItem ?? 'Item',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text(
+                  loans.any((l) => l.postId == p.id && l.holdsItem)
+                      ? 'On loan'
+                      : 'Available',
+                ),
+                onTap: () => openPost(context, p.id),
+              ),
+            ),
+          header('My requests'),
+          if (myRequests.isEmpty)
+            const Text(
+              'Need something? Tap ＋, choose Equipment and "I need to borrow".',
+              style: TextStyle(color: kMuted),
+            ),
+          for (final p in myRequests)
+            Card(
+              child: ListTile(
+                leading: Icon(
+                  p.offeredBy == null
+                      ? Icons.hourglass_top_rounded
+                      : Icons.check_circle_outline,
+                  color: kPrimary,
+                ),
+                title: Text(
+                  p.equipmentItem ?? 'Item',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text(
+                  '${p.offeredBy == null ? 'Waiting for a neighbour' : '${name(p.offeredBy!)} can lend it'}'
+                  '${p.startsAt == null ? '' : ' · needed by ${fmtDate(p.startsAt!)}'}',
+                ),
+                trailing: p.offeredBy == null
+                    ? null
+                    : TextButton(
+                        onPressed: () async {
+                          final id = await actions.startDm(p.offeredBy!);
+                          if (id != null && context.mounted) {
+                            openChat(context, id);
+                          }
+                        },
+                        child: const Text('Message'),
+                      ),
+                onTap: () => openPost(context, p.id),
+              ),
+            ),
+          header("Requests I'm helping with"),
+          if (helping.isEmpty)
+            const Text(
+              'Tap "I can lend" on a request in the Equipment tab.',
+              style: TextStyle(color: kMuted),
+            ),
+          for (final p in helping)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.front_hand_rounded, color: kPrimary),
+                title: Text(
+                  '${p.equipmentItem ?? 'Item'} for ${name(p.authorId)}',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text(
+                  p.startsAt == null
+                      ? 'You offered to lend it'
+                      : 'You offered · needed by ${fmtDate(p.startsAt!)}',
+                ),
+                trailing: TextButton(
+                  onPressed: () async {
+                    final id = await actions.startDm(p.authorId);
+                    if (id != null && context.mounted) openChat(context, id);
+                  },
+                  child: const Text('Message'),
+                ),
                 onTap: () => openPost(context, p.id),
               ),
             ),
           header("I'm borrowing"),
           if (borrowing.isEmpty)
-            const Text('Nothing borrowed right now.', style: TextStyle(color: kMuted)),
+            const Text(
+              'Nothing borrowed right now.',
+              style: TextStyle(color: kMuted),
+            ),
           for (final l in borrowing)
             Card(
               child: ListTile(
-                leading: const Icon(Icons.inventory_2_outlined, color: kPrimary),
-                title: Text('${itemName(l.postId)} from ${name(l.ownerId)}',
-                    style: const TextStyle(fontWeight: FontWeight.w700)),
+                leading: const Icon(
+                  Icons.inventory_2_outlined,
+                  color: kPrimary,
+                ),
+                title: Text(
+                  '${itemName(l.postId)} from ${name(l.ownerId)}',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
                 subtitle: Text(_statusLabel(l.status)),
                 trailing: l.status == LoanStatus.requested
                     ? TextButton(
-                        onPressed: () => actions.setLoanStatus(l.id, LoanStatus.cancelled),
+                        onPressed: () =>
+                            actions.setLoanStatus(l.id, LoanStatus.cancelled),
                         child: const Text('Cancel'),
                       )
                     : null,
@@ -155,7 +290,8 @@ class MyEquipmentScreen extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(itemName(l.postId)),
                 subtitle: Text(
-                    '${_statusLabel(l.status)} · ${fmtDate(l.returnedAt ?? l.requestedAt)}'),
+                  '${_statusLabel(l.status)} · ${fmtDate(l.returnedAt ?? l.requestedAt)}',
+                ),
               ),
           ],
         ],

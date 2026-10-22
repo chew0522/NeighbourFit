@@ -13,14 +13,17 @@ class CheckIn {
   /// yyyy-MM-dd
   final String date;
 
-  Map<String, dynamic> toJson() =>
-      {'userId': userId, 'amount': amount, 'date': date};
+  Map<String, dynamic> toJson() => {
+    'userId': userId,
+    'amount': amount,
+    'date': date,
+  };
 
   factory CheckIn.fromJson(Map<String, dynamic> j) => CheckIn(
-        userId: j['userId'] as String? ?? '',
-        amount: (j['amount'] as num?)?.toInt() ?? 0,
-        date: j['date'] as String? ?? '',
-      );
+    userId: j['userId'] as String? ?? '',
+    amount: (j['amount'] as num?)?.toInt() ?? 0,
+    date: j['date'] as String? ?? '',
+  );
 }
 
 class Challenge {
@@ -49,6 +52,7 @@ class Challenge {
   final DateTime endsAt;
   final String reward;
   final String communityId;
+
   /// 'steps', 'walk', 'cycle', 'time' or 'swim'. Picks the icon.
   final String kind;
 
@@ -77,52 +81,51 @@ class Challenge {
     int? seedProgress,
     List<String>? participantIds,
     List<CheckIn>? checkIns,
-  }) =>
-      Challenge(
-        id: id,
-        title: title,
-        unit: unit,
-        target: target,
-        seedProgress: seedProgress ?? this.seedProgress,
-        startsAt: startsAt,
-        endsAt: endsAt,
-        reward: reward,
-        communityId: communityId,
-        kind: kind,
-        quickAmount: quickAmount,
-        participantIds: participantIds ?? this.participantIds,
-        checkIns: checkIns ?? this.checkIns,
-      );
+  }) => Challenge(
+    id: id,
+    title: title,
+    unit: unit,
+    target: target,
+    seedProgress: seedProgress ?? this.seedProgress,
+    startsAt: startsAt,
+    endsAt: endsAt,
+    reward: reward,
+    communityId: communityId,
+    kind: kind,
+    quickAmount: quickAmount,
+    participantIds: participantIds ?? this.participantIds,
+    checkIns: checkIns ?? this.checkIns,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'unit': unit,
-        'target': target,
-        'seedProgress': seedProgress,
-        'startsAt': startsAt.toIso8601String(),
-        'endsAt': endsAt.toIso8601String(),
-        'reward': reward,
-        'communityId': communityId,
-        'kind': kind,
-        'quickAmount': quickAmount,
-        'participantIds': participantIds,
-        'checkIns': checkIns.map((e) => e.toJson()).toList(),
-      };
+    'id': id,
+    'title': title,
+    'unit': unit,
+    'target': target,
+    'seedProgress': seedProgress,
+    'startsAt': startsAt.toIso8601String(),
+    'endsAt': endsAt.toIso8601String(),
+    'reward': reward,
+    'communityId': communityId,
+    'kind': kind,
+    'quickAmount': quickAmount,
+    'participantIds': participantIds,
+    'checkIns': checkIns.map((e) => e.toJson()).toList(),
+  };
 
   factory Challenge.fromJson(Map<String, dynamic> j) => Challenge(
-        id: j['id'] as String,
-        title: j['title'] as String? ?? '',
-        unit: j['unit'] as String? ?? 'steps',
-        target: (j['target'] as num?)?.toInt() ?? 1,
-        seedProgress: (j['seedProgress'] as num?)?.toInt() ?? 0,
-        startsAt: parseDt(j['startsAt']),
-        endsAt: parseDt(j['endsAt']),
-        reward: j['reward'] as String? ?? '',
-        communityId: j['communityId'] as String? ?? 'c_lakeside',
-        kind: j['kind'] as String? ?? 'steps',
-        quickAmount: (j['quickAmount'] as num?)?.toInt() ?? 10000,
-        participantIds: strList(j['participantIds']),
-        checkIns: mapList(j['checkIns']).map(CheckIn.fromJson).toList(),
-      );
+    id: j['id'] as String,
+    title: j['title'] as String? ?? '',
+    unit: j['unit'] as String? ?? 'steps',
+    target: (j['target'] as num?)?.toInt() ?? 1,
+    seedProgress: (j['seedProgress'] as num?)?.toInt() ?? 0,
+    startsAt: parseDt(j['startsAt']),
+    endsAt: parseDt(j['endsAt']),
+    reward: j['reward'] as String? ?? '',
+    communityId: j['communityId'] as String? ?? 'c_lakeside',
+    kind: j['kind'] as String? ?? 'steps',
+    quickAmount: (j['quickAmount'] as num?)?.toInt() ?? 10000,
+    participantIds: strList(j['participantIds']),
+    checkIns: mapList(j['checkIns']).map(CheckIn.fromJson).toList(),
+  );
 }

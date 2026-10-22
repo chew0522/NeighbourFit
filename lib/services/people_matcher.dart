@@ -46,7 +46,8 @@ class PeopleMatcher {
       return null;
     }
     if (me.dismissedSuggestionIds.contains(other.id)) return null;
-    final hidden = !other.isVisible('ageGroup') &&
+    final hidden =
+        !other.isVisible('ageGroup') &&
         !other.isVisible('level') &&
         !other.isVisible('timeSlots');
     if (hidden) return null;
@@ -77,8 +78,10 @@ class PeopleMatcher {
     if (other.isVisible('timeSlots') &&
         me.timeSlots.isNotEmpty &&
         other.timeSlots.isNotEmpty) {
-      final overlap =
-          me.timeSlots.toSet().intersection(other.timeSlots.toSet()).length;
+      final overlap = me.timeSlots
+          .toSet()
+          .intersection(other.timeSlots.toSet())
+          .length;
       final minLen = me.timeSlots.length < other.timeSlots.length
           ? me.timeSlots.length
           : other.timeSlots.length;
@@ -102,8 +105,9 @@ class PeopleMatcher {
     if (me.languages.isNotEmpty && other.languages.isNotEmpty) {
       parts.add(languageFit(me.languages.toSet(), other.languages.toSet()));
     }
-    fits['levelLanguage'] =
-        parts.isEmpty ? null : parts.reduce((x, y) => x + y) / parts.length;
+    fits['levelLanguage'] = parts.isEmpty
+        ? null
+        : parts.reduce((x, y) => x + y) / parts.length;
 
     final used = {
       for (final k in MatchingConfig.keys)
@@ -120,30 +124,40 @@ class PeopleMatcher {
 
     // Reasons: the two strongest factors that actually fit well.
     final ranked = cleanFits.entries.where((e) => e.value >= 0.5).toList()
-      ..sort((x, y) => (y.value * weights[y.key]!)
-          .compareTo(x.value * weights[x.key]!));
+      ..sort(
+        (x, y) =>
+            (y.value * weights[y.key]!).compareTo(x.value * weights[x.key]!),
+      );
     final reasons = <String>[];
     for (final e in ranked) {
       switch (e.key) {
         case 'sport':
-          reasons.add(relatedSport
-              ? 'Also into ${sharedSport?.toLowerCase() ?? 'staying active'}'
-              : 'Both into ${sharedSport?.toLowerCase() ?? 'the same sport'}');
+          reasons.add(
+            relatedSport
+                ? 'Also into ${sharedSport?.toLowerCase() ?? 'staying active'}'
+                : 'Both into ${sharedSport?.toLowerCase() ?? 'the same sport'}',
+          );
         case 'time':
           reasons.add('Free at similar times');
         case 'age':
           reasons.add('Similar age group');
         case 'distance':
-          reasons.add(other.communityId == me.communityId
-              ? 'Lives in your community'
-              : 'Lives nearby');
+          reasons.add(
+            other.communityId == me.communityId
+                ? 'Lives in your community'
+                : 'Lives nearby',
+          );
         case 'levelLanguage':
-          final shared = me.languages.toSet().intersection(other.languages.toSet());
-          reasons.add(other.isVisible('level') && me.level == other.level
-              ? 'Similar level'
-              : (shared.isNotEmpty
-                  ? 'Also speaks ${languageLabels[shared.first] ?? shared.first}'
-                  : 'Similar level'));
+          final shared = me.languages.toSet().intersection(
+            other.languages.toSet(),
+          );
+          reasons.add(
+            other.isVisible('level') && me.level == other.level
+                ? 'Similar level'
+                : (shared.isNotEmpty
+                      ? 'Also speaks ${languageLabels[shared.first] ?? shared.first}'
+                      : 'Similar level'),
+          );
       }
       if (reasons.length == 2) break;
     }

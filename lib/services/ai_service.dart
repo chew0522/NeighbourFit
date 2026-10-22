@@ -52,7 +52,6 @@ Schema:
   "dayHint": "this_weekend | null",
   "agePref": "same_group | any",
   "genderFilter": "women_only | men_only | none",
-  "needsAccessibility": false,
   "level": "beginner | intermediate | advanced | null",
   "nearMe": false,
   "equipmentItem": "string | null"

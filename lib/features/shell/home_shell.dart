@@ -69,7 +69,9 @@ class _HomeShellState extends State<HomeShell> {
                         selected: _tab == 1,
                         onTap: () => setState(() => _tab = 1),
                       ),
-                      const Expanded(child: SizedBox.shrink()), // room for the ＋
+                      const Expanded(
+                        child: SizedBox.shrink(),
+                      ), // room for the ＋
                       _NavItem(
                         icon: Icons.emoji_events_rounded,
                         label: 'Challenges',
@@ -104,10 +106,18 @@ class _HomeShellState extends State<HomeShell> {
                           borderRadius: BorderRadius.circular(26),
                           border: Border.all(color: kBackground, width: 4),
                           boxShadow: const [
-                            BoxShadow(color: Colors.black38, blurRadius: 12, offset: Offset(0, 4)),
+                            BoxShadow(
+                              color: Colors.black38,
+                              blurRadius: 12,
+                              offset: Offset(0, 4),
+                            ),
                           ],
                         ),
-                        child: const Icon(Icons.add_rounded, size: 40, color: kText),
+                        child: const Icon(
+                          Icons.add_rounded,
+                          size: 40,
+                          color: kText,
+                        ),
                       ),
                     ),
                   ),
@@ -146,12 +156,15 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 26),
             const SizedBox(height: 2),
-            Text(label,
-                maxLines: 1,
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-                    color: color)),
+            Text(
+              label,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                color: color,
+              ),
+            ),
           ],
         ),
       ),

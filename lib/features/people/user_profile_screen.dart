@@ -31,33 +31,57 @@ class UserProfileScreen extends ConsumerWidget {
     if (me == null || user == null || user.blockedUserIds.contains(me.id)) {
       return Scaffold(
         appBar: AppBar(),
-        body: const EmptyState(icon: Icons.person_off_outlined, message: 'This profile is not available.'),
+        body: const EmptyState(
+          icon: Icons.person_off_outlined,
+          message: 'This profile is not available.',
+        ),
       );
     }
     final isMe = me.id == user.id;
-    final posts = ref.watch(postsProvider).where((p) => p.authorId == user.id).toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    final shares = posts.where((p) => p.type == PostType.sport || p.type == PostType.meal).toList();
+    final posts =
+        ref.watch(postsProvider).where((p) => p.authorId == user.id).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final shares = posts
+        .where((p) => p.type == PostType.sport || p.type == PostType.meal)
+        .toList();
     final hosted = posts.where((p) => p.type == PostType.meetup).toList();
     final joined = ref
         .watch(postsProvider)
-        .where((p) => p.isMeetup && p.memberIds.contains(user.id) && p.authorId != user.id)
+        .where(
+          (p) =>
+              p.isMeetup &&
+              p.memberIds.contains(user.id) &&
+              p.authorId != user.id,
+        )
         .toList();
     final meetups = [...hosted, ...joined]
-      ..sort((a, b) => (b.startsAt ?? b.createdAt).compareTo(a.startsAt ?? a.createdAt));
-    final lending = posts.where((p) => p.type == PostType.equipment).toList();
-    final community = ref.watch(referenceProvider).community(user.communityId)?.name ?? '';
+      ..sort(
+        (a, b) =>
+            (b.startsAt ?? b.createdAt).compareTo(a.startsAt ?? a.createdAt),
+      );
+    final lending = posts
+        .where((p) => p.type == PostType.equipment && !p.isRequest)
+        .toList();
+    final community =
+        ref.watch(referenceProvider).community(user.communityId)?.name ?? '';
 
     // Why this person is suggested, and meetups you are both going to.
-    final match = isMe ? null : ref.watch(peopleMatcherProvider).scorePair(me, user);
+    final match = isMe
+        ? null
+        : ref.watch(peopleMatcherProvider).scorePair(me, user);
     final now = DateTime.now();
     final together = isMe
         ? <Post>[]
         : ref
-            .watch(postsProvider)
-            .where((p) =>
-                p.isMeetup && p.isUpcoming(now) && p.memberIds.contains(me.id) && p.memberIds.contains(user.id))
-            .toList();
+              .watch(postsProvider)
+              .where(
+                (p) =>
+                    p.isMeetup &&
+                    p.isUpcoming(now) &&
+                    p.memberIds.contains(me.id) &&
+                    p.memberIds.contains(user.id),
+              )
+              .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +97,8 @@ class UserProfileScreen extends ConsumerWidget {
                   final ok = await confirmDialog(
                     context,
                     title: 'Block ${user.nickname}?',
-                    message: "You won't see their posts or messages, and they won't appear in suggestions.",
+                    message:
+                        "You won't see their posts or messages, and they won't appear in suggestions.",
                     confirmLabel: 'Block',
                   );
                   if (!ok) return;
@@ -113,7 +138,10 @@ class UserProfileScreen extends ConsumerWidget {
                   unselectedLabelColor: kMuted,
                   indicatorColor: kPrimary,
                   indicatorWeight: 3,
-                  labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
                   tabs: [
                     Tab(text: 'Posts ${shares.length}'),
                     Tab(text: 'Meetups ${meetups.length}'),
@@ -125,7 +153,10 @@ class UserProfileScreen extends ConsumerWidget {
           ],
           body: TabBarView(
             children: [
-              _PostList(posts: shares, empty: '${user.nickname} has not shared anything yet.'),
+              _PostList(
+                posts: shares,
+                empty: '${user.nickname} has not shared anything yet.',
+              ),
               _PostList(posts: meetups, empty: 'No meetups yet.'),
               _PostList(posts: lending, empty: 'Nothing to borrow right now.'),
             ],
@@ -179,16 +210,22 @@ class _Header extends ConsumerWidget {
         children: [
           UserAvatar(user: user, radius: 48),
           const SizedBox(height: 12),
-          Text(user.nickname,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          Text(
+            user.nickname,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 2),
-          Text('$community · joined ${DateFormat('MMM yyyy').format(user.createdAt)}',
-              style: const TextStyle(color: kMuted)),
+          Text(
+            '$community · joined ${DateFormat('MMM yyyy').format(user.createdAt)}',
+            style: const TextStyle(color: kMuted),
+          ),
           if (bio.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(bio,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            Text(
+              bio,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ],
           const SizedBox(height: 16),
           Row(
@@ -204,13 +241,18 @@ class _Header extends ConsumerWidget {
             child: isMe
                 ? OutlinedButton.icon(
                     onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => WizardScreen(editing: user))),
+                      MaterialPageRoute(
+                        builder: (_) => WizardScreen(editing: user),
+                      ),
+                    ),
                     icon: const Icon(Icons.edit_outlined),
                     label: const Text('Edit profile'),
                   )
                 : FilledButton.icon(
                     onPressed: () async {
-                      final id = await ref.read(appActionsProvider).messageNeighbour(user.id);
+                      final id = await ref
+                          .read(appActionsProvider)
+                          .messageNeighbour(user.id);
                       if (id != null && context.mounted) openChat(context, id);
                     },
                     icon: const Icon(Icons.chat_bubble_outline),
@@ -227,7 +269,11 @@ class _Header extends ConsumerWidget {
                 children: [
                   for (final r in reasons)
                     Chip(
-                      avatar: const Icon(Icons.auto_awesome, size: 16, color: kAccentDark),
+                      avatar: const Icon(
+                        Icons.auto_awesome,
+                        size: 16,
+                        color: kAccentDark,
+                      ),
                       label: Text(r, style: const TextStyle(fontSize: 13)),
                       backgroundColor: kAccentSoft,
                       side: BorderSide.none,
@@ -246,8 +292,10 @@ class _Header extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("You're both going to",
-                        style: TextStyle(fontWeight: FontWeight.w800)),
+                    const Text(
+                      "You're both going to",
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
                     for (final p in together)
                       InkWell(
                         onTap: () => openPost(context, p.id),
@@ -255,10 +303,16 @@ class _Header extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(vertical: 6),
                           child: Row(
                             children: [
-                              Icon(sportIcon(p.sport), size: 18, color: kPrimary),
+                              Icon(
+                                sportIcon(p.sport),
+                                size: 18,
+                                color: kPrimary,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: Text('${p.title ?? 'Meetup'} · ${fmtDateTime(p.startsAt!)}'),
+                                child: Text(
+                                  '${p.title ?? 'Meetup'} · ${fmtDateTime(p.startsAt!)}',
+                                ),
                               ),
                               const Icon(Icons.chevron_right, size: 18),
                             ],
@@ -291,13 +345,16 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Column(
-          children: [
-            Text('$value', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-            Text(label, style: const TextStyle(color: kMuted, fontSize: 13)),
-          ],
+    child: Column(
+      children: [
+        Text(
+          '$value',
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
         ),
-      );
+        Text(label, style: const TextStyle(color: kMuted, fontSize: 13)),
+      ],
+    ),
+  );
 }
 
 class _PostList extends StatelessWidget {
@@ -312,7 +369,11 @@ class _PostList extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text(empty, textAlign: TextAlign.center, style: const TextStyle(color: kMuted)),
+          child: Text(
+            empty,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: kMuted),
+          ),
         ),
       );
     }
@@ -341,8 +402,11 @@ class _TabsDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) =>
-      Container(color: kBackground, child: tabBar);
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => Container(color: kBackground, child: tabBar);
 
   @override
   bool shouldRebuild(covariant _TabsDelegate oldDelegate) => false;

@@ -10,6 +10,7 @@ import '../../state/app_state.dart';
 import '../../state/core_providers.dart';
 import '../../widgets/tags.dart';
 import '../challenges/challenge_detail_screen.dart';
+import '../compose/create_screen.dart';
 import '../feed/post_card.dart';
 import 'assistant_bubble.dart';
 import 'assistant_controller.dart';
@@ -318,6 +319,23 @@ class _MessageView extends StatelessWidget {
               label: const Text('Search again'),
             ),
           ),
+        if (message.requestItem != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: FilledButton.icon(
+              onPressed: () => openCreate(
+                context,
+                initial: CreateMode.equipment,
+                requestItem: message.requestItem,
+              ),
+              icon: const Icon(Icons.front_hand_rounded, size: 18),
+              label: Text(
+                message.requestItem!.isEmpty
+                    ? 'Post a request'
+                    : 'Request ${message.requestItem}',
+              ),
+            ),
+          ),
         if (message.note != null)
           Container(
             margin: const EdgeInsets.only(bottom: 6),
@@ -487,24 +505,6 @@ class _ResultCard extends ConsumerWidget {
                   'Owner: ${author?.nickname ?? 'Neighbour'}',
                   style: const TextStyle(fontSize: 14, color: kMuted),
                 ),
-              if (isMeetup && (p.safeBuddy || p.accessibilityFriendly)) ...[
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 6,
-                  children: [
-                    if (p.safeBuddy)
-                      const InfoTag(
-                        icon: Icons.shield_outlined,
-                        label: 'Safe buddy',
-                      ),
-                    if (p.accessibilityFriendly)
-                      const InfoTag(
-                        icon: Icons.accessible,
-                        label: 'Accessible',
-                      ),
-                  ],
-                ),
-              ],
               const SizedBox(height: 8),
               Text(
                 result.explanation,

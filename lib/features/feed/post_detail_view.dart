@@ -169,7 +169,9 @@ class PostDetailView extends ConsumerWidget {
                             children: [
                               Text(
                                 post.type == PostType.equipment
-                                    ? 'Lent by'
+                                    ? (post.isRequest
+                                          ? 'Requested by'
+                                          : 'Lent by')
                                     : 'Shared by',
                                 style: const TextStyle(
                                   color: kMuted,
@@ -234,7 +236,10 @@ class PostDetailView extends ConsumerWidget {
                         children: [
                           Text(
                             switch (post.type) {
-                              PostType.equipment => 'About this item',
+                              PostType.equipment =>
+                                post.isRequest
+                                    ? 'What they need'
+                                    : 'About this item',
                               PostType.meal => 'What was on the plate',
                               _ => 'How it went',
                             },
@@ -264,7 +269,7 @@ class PostDetailView extends ConsumerWidget {
                   ],
 
                   // ---- type specific
-                  if (post.type == PostType.equipment) ...[
+                  if (post.type == PostType.equipment && !post.isRequest) ...[
                     const SizedBox(height: 14),
                     _BorrowPanel(post: post, mine: _mine),
                   ],
@@ -390,6 +395,27 @@ class _HeaderStyle {
   ) {
     switch (p.type) {
       case PostType.equipment:
+        if (p.isRequest) {
+          final offered = p.offeredBy != null;
+          return _HeaderStyle(
+            headline: p.equipmentItem ?? 'Equipment',
+            icon: Icons.front_hand_rounded,
+            colors: const [Color(0xFFD9A441), kAccentDark],
+            chips: [
+              HeroChip(
+                icon: offered
+                    ? Icons.check_circle_outline
+                    : Icons.hourglass_top_rounded,
+                label: offered ? 'Someone can lend it' : 'Looking for a lender',
+              ),
+              if (p.startsAt != null)
+                HeroChip(
+                  icon: Icons.event_rounded,
+                  label: 'Needed by ${fmtDate(p.startsAt!)}',
+                ),
+            ],
+          );
+        }
         final holder = loans
             .where((l) => l.postId == p.id && l.holdsItem)
             .firstOrNull;

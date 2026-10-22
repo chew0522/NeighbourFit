@@ -15,18 +15,18 @@ class Comment {
   final DateTime createdAt;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'authorId': authorId,
-        'text': text,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'authorId': authorId,
+    'text': text,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory Comment.fromJson(Map<String, dynamic> j) => Comment(
-        id: j['id'] as String? ?? '',
-        authorId: j['authorId'] as String? ?? '',
-        text: j['text'] as String? ?? '',
-        createdAt: parseDt(j['createdAt']),
-      );
+    id: j['id'] as String? ?? '',
+    authorId: j['authorId'] as String? ?? '',
+    text: j['text'] as String? ?? '',
+    createdAt: parseDt(j['createdAt']),
+  );
 }
 
 class NextTime {
@@ -36,14 +36,17 @@ class NextTime {
   final String? note;
   final DateTime at;
 
-  Map<String, dynamic> toJson() =>
-      {'userId': userId, 'note': note, 'at': at.toIso8601String()};
+  Map<String, dynamic> toJson() => {
+    'userId': userId,
+    'note': note,
+    'at': at.toIso8601String(),
+  };
 
   factory NextTime.fromJson(Map<String, dynamic> j) => NextTime(
-        userId: j['userId'] as String? ?? '',
-        note: j['note'] as String?,
-        at: parseDt(j['at']),
-      );
+    userId: j['userId'] as String? ?? '',
+    note: j['note'] as String?,
+    at: parseDt(j['at']),
+  );
 }
 
 /// One post structure for every type. Unused fields stay null / empty.
@@ -59,15 +62,14 @@ class Post {
     this.startsAt,
     this.sport,
     this.level,
-    this.accessibilityFriendly = false,
-    this.safeBuddy = false,
     this.capacity,
     this.memberIds = const [],
     this.equipmentItem,
+    this.isRequest = false,
+    this.offeredBy,
     this.cheeredBy = const [],
     this.comments = const [],
     this.nextTimeBy = const [],
-    this.homeSafeIds = const [],
     this.photoPath,
     required this.createdAt,
   });
@@ -82,19 +84,23 @@ class Post {
   final DateTime? startsAt;
   final Sport? sport;
   final Level? level;
-  final bool accessibilityFriendly;
-  final bool safeBuddy;
 
   /// Meetup only. null means no limit.
   final int? capacity;
   final List<String> memberIds;
   final String? equipmentItem;
+
+  /// Equipment only. true = a neighbour is asking to borrow this item
+  /// (the date is in [startsAt]); false = the item is offered for lending.
+  final bool isRequest;
+
+  /// Requests only: the neighbour who said "I can lend".
+  final String? offeredBy;
   final List<String> cheeredBy;
   final List<Comment> comments;
 
   /// Sport shares only. Visible to the poster only.
   final List<NextTime> nextTimeBy;
-  final List<String> homeSafeIds;
 
   /// Optional photo. Either an asset under `post_pic/` (seed data) or a file
   /// saved on this device.
@@ -110,77 +116,73 @@ class Post {
     List<String>? cheeredBy,
     List<Comment>? comments,
     List<NextTime>? nextTimeBy,
-    List<String>? homeSafeIds,
-  }) =>
-      Post(
-        id: id,
-        type: type,
-        authorId: authorId,
-        communityId: communityId,
-        text: text,
-        title: title,
-        locationId: locationId,
-        startsAt: startsAt,
-        sport: sport,
-        level: level,
-        accessibilityFriendly: accessibilityFriendly,
-        safeBuddy: safeBuddy,
-        capacity: capacity,
-        memberIds: memberIds ?? this.memberIds,
-        equipmentItem: equipmentItem,
-        cheeredBy: cheeredBy ?? this.cheeredBy,
-        comments: comments ?? this.comments,
-        nextTimeBy: nextTimeBy ?? this.nextTimeBy,
-        homeSafeIds: homeSafeIds ?? this.homeSafeIds,
-        photoPath: photoPath,
-        createdAt: createdAt,
-      );
+    String? offeredBy,
+  }) => Post(
+    id: id,
+    type: type,
+    authorId: authorId,
+    communityId: communityId,
+    text: text,
+    title: title,
+    locationId: locationId,
+    startsAt: startsAt,
+    sport: sport,
+    level: level,
+    capacity: capacity,
+    memberIds: memberIds ?? this.memberIds,
+    equipmentItem: equipmentItem,
+    isRequest: isRequest,
+    offeredBy: offeredBy ?? this.offeredBy,
+    cheeredBy: cheeredBy ?? this.cheeredBy,
+    comments: comments ?? this.comments,
+    nextTimeBy: nextTimeBy ?? this.nextTimeBy,
+    photoPath: photoPath,
+    createdAt: createdAt,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': type.name,
-        'authorId': authorId,
-        'communityId': communityId,
-        'text': text,
-        'title': title,
-        'locationId': locationId,
-        'startsAt': startsAt?.toIso8601String(),
-        'sport': sport?.name,
-        'level': level?.name,
-        'accessibilityFriendly': accessibilityFriendly,
-        'safeBuddy': safeBuddy,
-        'capacity': capacity,
-        'memberIds': memberIds,
-        'equipmentItem': equipmentItem,
-        'cheeredBy': cheeredBy,
-        'comments': comments.map((e) => e.toJson()).toList(),
-        'nextTimeBy': nextTimeBy.map((e) => e.toJson()).toList(),
-        'homeSafeIds': homeSafeIds,
-        'photoPath': photoPath,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'type': type.name,
+    'authorId': authorId,
+    'communityId': communityId,
+    'text': text,
+    'title': title,
+    'locationId': locationId,
+    'startsAt': startsAt?.toIso8601String(),
+    'sport': sport?.name,
+    'level': level?.name,
+    'capacity': capacity,
+    'memberIds': memberIds,
+    'equipmentItem': equipmentItem,
+    'isRequest': isRequest,
+    'offeredBy': offeredBy,
+    'cheeredBy': cheeredBy,
+    'comments': comments.map((e) => e.toJson()).toList(),
+    'nextTimeBy': nextTimeBy.map((e) => e.toJson()).toList(),
+    'photoPath': photoPath,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory Post.fromJson(Map<String, dynamic> j) => Post(
-        id: j['id'] as String,
-        type: enumByName(PostType.values, j['type']) ?? PostType.sport,
-        authorId: j['authorId'] as String? ?? '',
-        communityId: j['communityId'] as String? ?? 'c_lakeside',
-        text: j['text'] as String? ?? '',
-        title: j['title'] as String?,
-        locationId: j['locationId'] as String?,
-        startsAt: parseDtOrNull(j['startsAt']),
-        sport: enumByName(Sport.values, j['sport']),
-        level: enumByName(Level.values, j['level']),
-        accessibilityFriendly: j['accessibilityFriendly'] as bool? ?? false,
-        safeBuddy: j['safeBuddy'] as bool? ?? false,
-        capacity: (j['capacity'] as num?)?.toInt(),
-        memberIds: strList(j['memberIds']),
-        equipmentItem: j['equipmentItem'] as String?,
-        cheeredBy: strList(j['cheeredBy']),
-        comments: mapList(j['comments']).map(Comment.fromJson).toList(),
-        nextTimeBy: mapList(j['nextTimeBy']).map(NextTime.fromJson).toList(),
-        homeSafeIds: strList(j['homeSafeIds']),
-        photoPath: j['photoPath'] as String?,
-        createdAt: parseDt(j['createdAt']),
-      );
+    id: j['id'] as String,
+    type: enumByName(PostType.values, j['type']) ?? PostType.sport,
+    authorId: j['authorId'] as String? ?? '',
+    communityId: j['communityId'] as String? ?? 'c_lakeside',
+    text: j['text'] as String? ?? '',
+    title: j['title'] as String?,
+    locationId: j['locationId'] as String?,
+    startsAt: parseDtOrNull(j['startsAt']),
+    sport: enumByName(Sport.values, j['sport']),
+    level: enumByName(Level.values, j['level']),
+    capacity: (j['capacity'] as num?)?.toInt(),
+    memberIds: strList(j['memberIds']),
+    equipmentItem: j['equipmentItem'] as String?,
+    isRequest: j['isRequest'] as bool? ?? false,
+    offeredBy: j['offeredBy'] as String?,
+    cheeredBy: strList(j['cheeredBy']),
+    comments: mapList(j['comments']).map(Comment.fromJson).toList(),
+    nextTimeBy: mapList(j['nextTimeBy']).map(NextTime.fromJson).toList(),
+    photoPath: j['photoPath'] as String?,
+    createdAt: parseDt(j['createdAt']),
+  );
 }

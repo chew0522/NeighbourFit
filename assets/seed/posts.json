@@ -33,7 +33,6 @@
     "sport": "walking",
     "level": "beginner",
     "capacity": 6,
-    "accessibilityFriendly": true,
     "memberIds": [
       "u_siti",
       "u_nurul",
@@ -119,7 +118,6 @@
     "sport": "walking",
     "level": "beginner",
     "capacity": null,
-    "accessibilityFriendly": true,
     "memberIds": [
       "u_raj",
       "u_lim",
@@ -141,7 +139,6 @@
     "sport": "walking",
     "level": "beginner",
     "capacity": 6,
-    "safeBuddy": true,
     "memberIds": [
       "u_nurul",
       "u_siti"
@@ -162,7 +159,6 @@
     "sport": "yoga",
     "level": "beginner",
     "capacity": 10,
-    "accessibilityFriendly": true,
     "memberIds": [
       "u_priya",
       "u_zainab"
@@ -514,8 +510,7 @@
       "u_mei",
       "u_hakim"
     ],
-    "createdAgoHours": 4,
-    "accessibilityFriendly": true
+    "createdAgoHours": 4
   },
   {
     "id": "p_m14",
@@ -638,5 +633,10 @@
     "equipmentItem": "Badminton shuttlecocks (12)",
     "text": "Feather shuttles, lightly used.",
     "createdAgoHours": 36
-  }
+  },
+  {"id": "p_r1", "type": "equipment", "authorId": "u_aiman", "equipmentItem": "Badminton racket", "isRequest": true, "text": "Trying badminton with friends this weekend. Could I borrow a racket for a day?", "startsAtOffset": {"days": 2, "time": "18:00"}, "createdAgoHours": 3},
+  {"id": "p_r2", "type": "equipment", "authorId": "u_raj", "equipmentItem": "Walking poles", "isRequest": true, "text": "My knees prefer a little help on the slow walks. Anyone with a pair of walking poles?", "startsAtOffset": {"days": 3, "time": "18:00"}, "createdAgoHours": 7},
+  {"id": "p_r3", "type": "equipment", "authorId": "u_wei", "equipmentItem": "Bicycle pump", "isRequest": true, "offeredBy": "u_hafiz", "text": "Tyre is flat before the Sunday ride. Need a pump for ten minutes.", "startsAtOffset": {"days": 1, "time": "18:00"}, "createdAgoHours": 14},
+  {"id": "p_r4", "type": "equipment", "authorId": "u_nurul", "equipmentItem": "Foam roller", "isRequest": true, "text": "Sore legs after the evening walks. Would love to try a foam roller before buying one.", "startsAtOffset": {"days": 4, "time": "18:00"}, "createdAgoHours": 22},
+  {"id": "p_r5", "type": "equipment", "authorId": "u_sarah", "equipmentItem": "Swim goggles", "isRequest": true, "text": "Forgot mine at the pool. Anyone with a spare pair for Friday's laps?", "startsAtOffset": {"days": 3, "time": "17:30"}, "createdAgoHours": 30}
 ]

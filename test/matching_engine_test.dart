@@ -47,8 +47,12 @@ void main() {
 
   group('weights', () {
     test('dynamic weights are renormalised to 100', () {
-      final w = dynamicWeights(cfg,
-          sameGroup: true, nearMe: true, slotExplicit: true);
+      final w = dynamicWeights(
+        cfg,
+        sameGroup: true,
+        nearMe: true,
+        slotExplicit: true,
+      );
       expect(w.values.fold<double>(0, (a, b) => a + b), closeTo(100, 1e-9));
       expect(w['age']! > cfg.weights['age']!, isTrue);
     });
@@ -76,59 +80,67 @@ void main() {
   group('MatchingEngine hard filters', () {
     final now = DateTime(2026, 10, 16, 10); // Friday
     const ref = ReferenceData(
-      communities: [
-        Community(id: 'c1', name: 'One', lat: 3.1, lng: 101.6),
-      ],
+      communities: [Community(id: 'c1', name: 'One', lat: 3.1, lng: 101.6)],
       locations: [
-        PresetLocation(id: 'l1', name: 'Park', communityId: 'c1', lat: 3.1, lng: 101.6),
+        PresetLocation(
+          id: 'l1',
+          name: 'Park',
+          communityId: 'c1',
+          lat: 3.1,
+          lng: 101.6,
+        ),
       ],
       vouchers: [],
       residentCodes: [],
     );
-    UserProfile user(String id,
-            {Gender g = Gender.female}) =>
-        UserProfile(
-          id: id,
-          nickname: id,
-          communityId: 'c1',
-          gender: g,
-          sports: const [Sport.running],
-          timeSlots: const [TimeSlot.morning],
-          visibility: const {
-            'ageGroup': FieldVisibility.everyone,
-            'gender': FieldVisibility.everyone,
-            'level': FieldVisibility.everyone,
-            'timeSlots': FieldVisibility.everyone,
-          },
-          createdAt: now,
-        );
-    Post meetup(String id, String author, DateTime start,
-            {int? cap, List<String> members = const [], bool acc = false}) =>
-        Post(
-          id: id,
-          type: PostType.meetup,
-          authorId: author,
-          communityId: 'c1',
-          locationId: 'l1',
-          startsAt: start,
-          sport: Sport.running,
-          level: Level.beginner,
-          capacity: cap,
-          accessibilityFriendly: acc,
-          memberIds: members.isEmpty ? [author] : members,
-          createdAt: now,
-        );
+    UserProfile user(String id, {Gender g = Gender.female}) => UserProfile(
+      id: id,
+      nickname: id,
+      communityId: 'c1',
+      gender: g,
+      sports: const [Sport.running],
+      timeSlots: const [TimeSlot.morning],
+      visibility: const {
+        'ageGroup': FieldVisibility.everyone,
+        'gender': FieldVisibility.everyone,
+        'level': FieldVisibility.everyone,
+        'timeSlots': FieldVisibility.everyone,
+      },
+      createdAt: now,
+    );
+    Post meetup(
+      String id,
+      String author,
+      DateTime start, {
+      int? cap,
+      List<String> members = const [],
+    }) => Post(
+      id: id,
+      type: PostType.meetup,
+      authorId: author,
+      communityId: 'c1',
+      locationId: 'l1',
+      startsAt: start,
+      sport: Sport.running,
+      level: Level.beginner,
+      capacity: cap,
+      memberIds: members.isEmpty ? [author] : members,
+      createdAt: now,
+    );
 
-    EngineData data(UserProfile me, List<UserProfile> users, List<Post> posts) =>
-        EngineData(
-          me: me,
-          users: users,
-          posts: posts,
-          challenges: const [],
-          loans: const <EquipmentLoan>[],
-          ref: ref,
-          now: now,
-        );
+    EngineData data(
+      UserProfile me,
+      List<UserProfile> users,
+      List<Post> posts,
+    ) => EngineData(
+      me: me,
+      users: users,
+      posts: posts,
+      challenges: const [],
+      loans: const <EquipmentLoan>[],
+      ref: ref,
+      now: now,
+    );
 
     final engine = MatchingEngine(cfg);
     final tomorrowMorning = DateTime(2026, 10, 17, 6, 30);
@@ -143,8 +155,7 @@ void main() {
         meetup('own', 'me', tomorrowMorning),
         meetup('joined', 'a', tomorrowMorning, members: ['a', 'me']),
       ];
-      final r = engine.recommend(
-          const ParsedQuery(), data(me, [me, a], posts));
+      final r = engine.recommend(const ParsedQuery(), data(me, [me, a], posts));
       expect(r.map((e) => e.post!.id), ['ok']);
     });
 
@@ -176,18 +187,6 @@ void main() {
       expect(r.map((e) => e.post!.id), ['am']);
     });
 
-    test('asking for accessible meetups keeps only accessibility-friendly ones', () {
-      final me = user('me');
-      final a = user('a');
-      final posts = [
-        meetup('plain', 'a', tomorrowMorning),
-        meetup('step', 'a', tomorrowMorning, acc: true),
-      ];
-      final r = engine.recommend(
-          const ParsedQuery(needsAccessibility: true), data(me, [me, a], posts));
-      expect(r.map((e) => e.post!.id), ['step']);
-    });
-
     test('women-only needs a disclosed female organiser', () {
       final me = user('me');
       final f = user('f');
@@ -206,9 +205,54 @@ void main() {
     test('blocked organiser is excluded', () {
       final me = user('me').copyWith(blockedUserIds: ['a']);
       final a = user('a');
-      final r = engine.recommend(const ParsedQuery(),
-          data(me, [me, a], [meetup('x', 'a', tomorrowMorning)]));
+      final r = engine.recommend(
+        const ParsedQuery(),
+        data(me, [me, a], [meetup('x', 'a', tomorrowMorning)]),
+      );
       expect(r, isEmpty);
+    });
+
+    test('equipment search skips requests', () {
+      final me = user('me');
+      final a = user('a');
+      Post equipment(String id, {required bool request}) => Post(
+        id: id,
+        type: PostType.equipment,
+        authorId: 'a',
+        communityId: 'c1',
+        equipmentItem: 'Yoga mat',
+        isRequest: request,
+        createdAt: now,
+      );
+      final r = engine.recommend(
+        const ParsedQuery(
+          intent: QueryIntent.findEquipment,
+          equipmentItem: 'yoga mat',
+        ),
+        data(
+          me,
+          [me, a],
+          [equipment('lend', request: false), equipment('ask', request: true)],
+        ),
+      );
+      expect(r.map((e) => e.post!.id), ['lend']);
+    });
+
+    test('a request keeps its flag and offer through json', () {
+      final p = Post(
+        id: 'r',
+        type: PostType.equipment,
+        authorId: 'a',
+        communityId: 'c1',
+        equipmentItem: 'Foam roller',
+        isRequest: true,
+        startsAt: now,
+        createdAt: now,
+      ).copyWith(offeredBy: 'b');
+      final back = Post.fromJson(p.toJson());
+      expect(back.isRequest, isTrue);
+      expect(back.offeredBy, 'b');
+      expect(back.startsAt, now);
     });
   });
 }

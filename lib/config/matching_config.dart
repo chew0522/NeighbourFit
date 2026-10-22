@@ -33,30 +33,30 @@ class MatchingConfig {
   }
 
   static MatchingConfig defaults() => const MatchingConfig(
-        weights: {
-          'sport': 30,
-          'time': 25,
-          'distance': 20,
-          'age': 10,
-          'levelLanguage': 15,
-        },
-        sameGroupAgeWeight: 30,
-        nearMeDistanceWeight: 35,
-        timeStatedWeight: 35,
-        peopleWeights: {
-          'sport': 35,
-          'time': 20,
-          'age': 20,
-          'distance': 15,
-          'levelLanguage': 10,
-        },
-        peopleMinScore: 30,
-        peopleMax: 5,
-        related: {
-          'running': {'walking': 0.5, 'cycling': 0.25},
-          'walking': {'yoga': 0.25},
-        },
-      );
+    weights: {
+      'sport': 30,
+      'time': 25,
+      'distance': 20,
+      'age': 10,
+      'levelLanguage': 15,
+    },
+    sameGroupAgeWeight: 30,
+    nearMeDistanceWeight: 35,
+    timeStatedWeight: 35,
+    peopleWeights: {
+      'sport': 35,
+      'time': 20,
+      'age': 20,
+      'distance': 15,
+      'levelLanguage': 10,
+    },
+    peopleMinScore: 30,
+    peopleMax: 5,
+    related: {
+      'running': {'walking': 0.5, 'cycling': 0.25},
+      'walking': {'yoga': 0.25},
+    },
+  );
 
   factory MatchingConfig.fromJson(Map<String, dynamic> j) {
     Map<String, double> dm(Object? v) => v is Map
@@ -72,8 +72,10 @@ class MatchingConfig {
     return MatchingConfig(
       weights: dm(j['weights']).isEmpty ? d.weights : dm(j['weights']),
       sameGroupAgeWeight:
-          (dynamicW['sameGroupAge'] as num?)?.toDouble() ?? d.sameGroupAgeWeight,
-      nearMeDistanceWeight: (dynamicW['nearMeDistance'] as num?)?.toDouble() ??
+          (dynamicW['sameGroupAge'] as num?)?.toDouble() ??
+          d.sameGroupAgeWeight,
+      nearMeDistanceWeight:
+          (dynamicW['nearMeDistance'] as num?)?.toDouble() ??
           d.nearMeDistanceWeight,
       timeStatedWeight:
           (dynamicW['timeStated'] as num?)?.toDouble() ?? d.timeStatedWeight,

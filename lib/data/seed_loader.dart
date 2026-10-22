@@ -15,7 +15,7 @@ class SeedLoader {
   final LocalStore store;
   final AssetBundle bundle;
 
-  static const _version = '10';
+  static const _version = '13';
 
   Future<dynamic> _json(String name) async =>
       jsonDecode(await bundle.loadString('assets/seed/$name'));
@@ -38,7 +38,9 @@ class SeedLoader {
         if (!path.startsWith('post_pic/')) continue;
         final file = path.substring('post_pic/'.length);
         final dot = file.lastIndexOf('.');
-        final name = (dot < 0 ? file : file.substring(0, dot)).replaceAll('-', '_').toLowerCase();
+        final name = (dot < 0 ? file : file.substring(0, dot))
+            .replaceAll('-', '_')
+            .toLowerCase();
         photos[name] = path;
       }
     } catch (_) {}
@@ -56,10 +58,14 @@ class SeedLoader {
       final id = (p['id'] as String? ?? '').toLowerCase();
       final current = p['photoPath'] as String?;
       final wanted = photos[id];
-      if (wanted != null && current != wanted && (current == null || current.startsWith('post_pic/'))) {
+      if (wanted != null &&
+          current != wanted &&
+          (current == null || current.startsWith('post_pic/'))) {
         p['photoPath'] = wanted;
         changed = true;
-      } else if (wanted == null && current != null && current.startsWith('post_pic/')) {
+      } else if (wanted == null &&
+          current != null &&
+          current.startsWith('post_pic/')) {
         p['photoPath'] = null;
         changed = true;
       }
@@ -78,8 +84,8 @@ class SeedLoader {
 
   Future<void> seed([DateTime? clock]) async {
     final now = clock ?? DateTime.now();
-    DateTime ago({num hours = 0, num minutes = 0}) => now.subtract(
-        Duration(minutes: (hours * 60 + minutes).round()));
+    DateTime ago({num hours = 0, num minutes = 0}) =>
+        now.subtract(Duration(minutes: (hours * 60 + minutes).round()));
 
     // Users
     final users = <Map<String, dynamic>>[];
@@ -107,23 +113,29 @@ class SeedLoader {
       final author = userById[m['authorId']];
       m['communityId'] = author?['communityId'] ?? 'c_lakeside';
       if (m['startsAtOffset'] != null) {
-        m['startsAt'] =
-            resolveOffset(asMap(m['startsAtOffset']), now).toIso8601String();
+        m['startsAt'] = resolveOffset(
+          asMap(m['startsAtOffset']),
+          now,
+        ).toIso8601String();
         m.remove('startsAtOffset');
       }
       final photo = photos[(m['id'] as String).toLowerCase()];
       if (photo != null) m['photoPath'] = photo;
-      m['createdAt'] =
-          ago(hours: (m['createdAgoHours'] as num?) ?? 1).toIso8601String();
+      m['createdAt'] = ago(
+        hours: (m['createdAgoHours'] as num?) ?? 1,
+      ).toIso8601String();
       m.remove('createdAgoHours');
       m['comments'] = mapList(m['comments'])
-          .map((c) => {
-                'id': 'c_${m['id']}_${c['authorId']}',
-                'authorId': c['authorId'],
-                'text': c['text'],
-                'createdAt':
-                    ago(hours: (c['agoHours'] as num?) ?? 1).toIso8601String(),
-              })
+          .map(
+            (c) => {
+              'id': 'c_${m['id']}_${c['authorId']}',
+              'authorId': c['authorId'],
+              'text': c['text'],
+              'createdAt': ago(
+                hours: (c['agoHours'] as num?) ?? 1,
+              ).toIso8601String(),
+            },
+          )
           .toList();
       posts.add(m);
     }
@@ -141,8 +153,14 @@ class SeedLoader {
         m['communityId'] = cid;
         m['target'] = ((c['target'] as num) * scale).round();
         m['seedProgress'] = ((c['seedProgress'] as num) * scale).round();
-        m['startsAt'] = resolveOffset(asMap(c['startsOffset']), now).toIso8601String();
-        m['endsAt'] = resolveOffset(asMap(c['endsOffset']), now).toIso8601String();
+        m['startsAt'] = resolveOffset(
+          asMap(c['startsOffset']),
+          now,
+        ).toIso8601String();
+        m['endsAt'] = resolveOffset(
+          asMap(c['endsOffset']),
+          now,
+        ).toIso8601String();
         m.remove('startsOffset');
         m.remove('endsOffset');
         m['participantIds'] = users
@@ -166,8 +184,9 @@ class SeedLoader {
           'senderId': msg['senderId'],
           'text': msg['text'],
           'isSystem': msg['isSystem'] ?? false,
-          'createdAt':
-              ago(minutes: (msg['agoMinutes'] as num?) ?? 5).toIso8601String(),
+          'createdAt': ago(
+            minutes: (msg['agoMinutes'] as num?) ?? 5,
+          ).toIso8601String(),
         };
       }).toList();
       convs.add(m);
@@ -189,8 +208,10 @@ class SeedLoader {
             'senderId': p['authorId'],
             'text': '${author?['nickname'] ?? 'Someone'} started this meetup',
             'isSystem': true,
-            'createdAt': DateTime.parse(p['createdAt'] as String).toIso8601String(),
-          }
+            'createdAt': DateTime.parse(
+              p['createdAt'] as String,
+            ).toIso8601String(),
+          },
         ],
       });
     }
@@ -199,7 +220,9 @@ class SeedLoader {
     final loans = <Map<String, dynamic>>[];
     for (final l in mapList(await _json('loans.json'))) {
       final m = Map<String, dynamic>.from(l);
-      m['requestedAt'] = ago(hours: (m['requestedAgoHours'] as num?) ?? 5).toIso8601String();
+      m['requestedAt'] = ago(
+        hours: (m['requestedAgoHours'] as num?) ?? 5,
+      ).toIso8601String();
       m.remove('requestedAgoHours');
       loans.add(m);
     }
@@ -210,12 +233,12 @@ class SeedLoader {
       var left = (u['points'] as num?)?.toInt() ?? 0;
       var i = 0;
       while (left > 0) {
-        final delta = (left >= 20 && i.isEven) ? 20 : 10;
+        const delta = 10;
         points.add({
           'id': 'pt_${u['id']}_$i',
           'userId': u['id'],
           'delta': delta,
-          'label': delta == 20 ? 'Joined a meetup' : 'Challenge check-in',
+          'label': 'Challenge check-in',
           'at': ago(hours: 12 + i * 30).toIso8601String(),
           'refType': 'seed',
         });

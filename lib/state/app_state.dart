@@ -36,8 +36,9 @@ class SessionNotifier extends Notifier<String?> {
   }
 }
 
-final sessionProvider =
-    NotifierProvider<SessionNotifier, String?>(SessionNotifier.new);
+final sessionProvider = NotifierProvider<SessionNotifier, String?>(
+  SessionNotifier.new,
+);
 
 // ------------------------------------------------------------------ users
 
@@ -59,33 +60,41 @@ class UsersNotifier extends Notifier<List<UserProfile>> {
 
   Future<void> upsert(UserProfile u) async {
     final exists = state.any((e) => e.id == u.id);
-    await _save(exists
-        ? [for (final e in state) e.id == u.id ? u : e]
-        : [...state, u]);
+    await _save(
+      exists ? [for (final e in state) e.id == u.id ? u : e] : [...state, u],
+    );
   }
 
   Future<void> update(String id, UserProfile Function(UserProfile) f) =>
       _save([for (final u in state) u.id == id ? f(u) : u]);
 
-  Future<void> addPoints(String id, int delta) =>
-      update(id, (u) => u.copyWith(points: (u.points + delta).clamp(0, 1 << 30)));
+  Future<void> addPoints(String id, int delta) => update(
+    id,
+    (u) => u.copyWith(points: (u.points + delta).clamp(0, 1 << 30)),
+  );
 
   Future<void> block(String me, String other) => update(
-      me,
-      (u) => u.blockedUserIds.contains(other)
-          ? u
-          : u.copyWith(blockedUserIds: [...u.blockedUserIds, other]));
+    me,
+    (u) => u.blockedUserIds.contains(other)
+        ? u
+        : u.copyWith(blockedUserIds: [...u.blockedUserIds, other]),
+  );
 
   Future<void> unblock(String me, String other) => update(
-      me,
-      (u) => u.copyWith(
-          blockedUserIds: u.blockedUserIds.where((e) => e != other).toList()));
+    me,
+    (u) => u.copyWith(
+      blockedUserIds: u.blockedUserIds.where((e) => e != other).toList(),
+    ),
+  );
 
   Future<void> dismissSuggestion(String me, String other) => update(
-      me,
-      (u) => u.dismissedSuggestionIds.contains(other)
-          ? u
-          : u.copyWith(dismissedSuggestionIds: [...u.dismissedSuggestionIds, other]));
+    me,
+    (u) => u.dismissedSuggestionIds.contains(other)
+        ? u
+        : u.copyWith(
+            dismissedSuggestionIds: [...u.dismissedSuggestionIds, other],
+          ),
+  );
 
   /// Returns the voucher code, or null if the user lacks the points.
   Future<String?> redeem(String userId, Voucher v) async {
@@ -103,7 +112,9 @@ class UsersNotifier extends Notifier<List<UserProfile>> {
         ],
       ),
     );
-    await ref.read(pointsProvider.notifier).add(
+    await ref
+        .read(pointsProvider.notifier)
+        .add(
           userId: userId,
           delta: -v.pointsCost,
           label: 'Redeemed: ${v.title}',
@@ -114,8 +125,9 @@ class UsersNotifier extends Notifier<List<UserProfile>> {
   }
 }
 
-final usersProvider =
-    NotifierProvider<UsersNotifier, List<UserProfile>>(UsersNotifier.new);
+final usersProvider = NotifierProvider<UsersNotifier, List<UserProfile>>(
+  UsersNotifier.new,
+);
 
 final currentUserProvider = Provider<UserProfile?>((ref) {
   final id = ref.watch(sessionProvider);
@@ -159,7 +171,7 @@ class PostsNotifier extends Notifier<List<Post>> {
     final me = ref.read(sessionProvider);
     if (p.authorId != me) return;
     if (p.type == PostType.sport) _mockNextTimeReactions(p);
-    if (p.type == PostType.equipment) _mockBorrowRequest(p);
+    if (p.type == PostType.equipment && !p.isRequest) _mockBorrowRequest(p);
   }
 
   Future<void> toggleCheer(String postId, String userId) =>
@@ -189,34 +201,58 @@ class PostsNotifier extends Notifier<List<Post>> {
   Future<bool> join(String postId, String userId) async {
     final p = byId(postId);
     if (p == null || p.memberIds.contains(userId) || p.isFull) return false;
-    await _change(postId, (x) => x.copyWith(memberIds: [...x.memberIds, userId]));
+    await _change(
+      postId,
+      (x) => x.copyWith(memberIds: [...x.memberIds, userId]),
+    );
     return true;
   }
 
   Future<void> leave(String postId, String userId) => _change(
-      postId,
-      (p) => p.copyWith(
-          memberIds: p.memberIds.where((e) => e != userId).toList()));
+    postId,
+    (p) =>
+        p.copyWith(memberIds: p.memberIds.where((e) => e != userId).toList()),
+  );
+
+  /// A neighbour says "I can lend" on a request. false if it is not a
+  /// request or somebody already offered.
+  Future<bool> offer(String postId, String userId) async {
+    final p = byId(postId);
+    if (p == null || !p.isRequest || p.offeredBy != null) return false;
+    await _change(postId, (x) => x.copyWith(offeredBy: userId));
+    return true;
+  }
 
   // MOCK: a few seconds after you share a workout, two neighbours say
   // "next time together" so the poster-only list can be demonstrated.
   void _mockNextTimeReactions(Post post) {
     Future.delayed(const Duration(seconds: 4), () async {
       try {
-        final others = ref
-            .read(usersProvider)
-            .where((u) => u.id != post.authorId && u.communityId == post.communityId)
-            .toList()
-          ..shuffle(_rng);
+        final others =
+            ref
+                .read(usersProvider)
+                .where(
+                  (u) =>
+                      u.id != post.authorId &&
+                      u.communityId == post.communityId,
+                )
+                .toList()
+              ..shuffle(_rng);
         final picks = others.take(2).toList();
         if (picks.isEmpty) return;
         await _change(
           post.id,
-          (p) => p.copyWith(nextTimeBy: [
-            ...p.nextTimeBy,
-            for (final u in picks)
-              NextTime(userId: u.id, note: 'Would love to join you!', at: DateTime.now()),
-          ]),
+          (p) => p.copyWith(
+            nextTimeBy: [
+              ...p.nextTimeBy,
+              for (final u in picks)
+                NextTime(
+                  userId: u.id,
+                  note: 'Would love to join you!',
+                  at: DateTime.now(),
+                ),
+            ],
+          ),
         );
       } catch (_) {}
     });
@@ -228,7 +264,9 @@ class PostsNotifier extends Notifier<List<Post>> {
       try {
         final others = ref
             .read(usersProvider)
-            .where((u) => u.id != post.authorId && u.communityId == post.communityId)
+            .where(
+              (u) => u.id != post.authorId && u.communityId == post.communityId,
+            )
             .toList();
         if (others.isEmpty) return;
         final who = others[_rng.nextInt(others.length)];
@@ -238,8 +276,9 @@ class PostsNotifier extends Notifier<List<Post>> {
   }
 }
 
-final postsProvider =
-    NotifierProvider<PostsNotifier, List<Post>>(PostsNotifier.new);
+final postsProvider = NotifierProvider<PostsNotifier, List<Post>>(
+  PostsNotifier.new,
+);
 
 final postByIdProvider = Provider.family<Post?, String>((ref, id) {
   for (final p in ref.watch(postsProvider)) {
@@ -293,12 +332,12 @@ class ChatNotifier extends Notifier<List<Conversation>> {
       _save([for (final c in state) c.id == id ? f(c) : c]);
 
   Message _system(String text) => Message(
-        id: newId('m_'),
-        senderId: 'system',
-        text: text,
-        createdAt: DateTime.now(),
-        isSystem: true,
-      );
+    id: newId('m_'),
+    senderId: 'system',
+    text: text,
+    createdAt: DateTime.now(),
+    isSystem: true,
+  );
 
   /// Returns the id of the DM with [other], creating it if needed.
   Future<String> dmWith(String me, String other) async {
@@ -310,7 +349,11 @@ class ChatNotifier extends Notifier<List<Conversation>> {
         return c.id;
       }
     }
-    final c = Conversation(id: newId('conv_'), type: 'dm', memberIds: [me, other]);
+    final c = Conversation(
+      id: newId('conv_'),
+      type: 'dm',
+      memberIds: [me, other],
+    );
     await _save([...state, c]);
     return c.id;
   }
@@ -325,7 +368,9 @@ class ChatNotifier extends Notifier<List<Conversation>> {
       memberIds: List<String>.from(post.memberIds),
       sourcePostId: post.id,
       title: post.title,
-      messages: [_system('${author?.nickname ?? 'Someone'} started this meetup')],
+      messages: [
+        _system('${author?.nickname ?? 'Someone'} started this meetup'),
+      ],
     );
     await _save([...state, c]);
     return c.id;
@@ -347,7 +392,11 @@ class ChatNotifier extends Notifier<List<Conversation>> {
     );
   }
 
-  Future<void> removeMember(String postId, UserProfile user, {bool announce = true}) async {
+  Future<void> removeMember(
+    String postId,
+    UserProfile user, {
+    bool announce = true,
+  }) async {
     final c = groupFor(postId);
     if (c == null) return;
     await _change(
@@ -357,24 +406,37 @@ class ChatNotifier extends Notifier<List<Conversation>> {
         messages: announce
             ? [...x.messages, _system('${user.nickname} left')]
             : x.messages
-                .where((m) => !(m.isSystem && m.text.startsWith('${user.nickname} is in')))
-                .toList(),
+                  .where(
+                    (m) =>
+                        !(m.isSystem &&
+                            m.text.startsWith('${user.nickname} is in')),
+                  )
+                  .toList(),
       ),
     );
   }
 
-  Future<void> systemMessage(String convId, String text) =>
-      _change(convId, (c) => c.copyWith(messages: [...c.messages, _system(text)]));
+  Future<void> systemMessage(String convId, String text) => _change(
+    convId,
+    (c) => c.copyWith(messages: [...c.messages, _system(text)]),
+  );
 
   Future<void> send(String convId, String senderId, String text) async {
     final c = byId(convId);
     if (c == null || c.status == 'blocked') return;
     await _change(
       convId,
-      (x) => x.copyWith(messages: [
-        ...x.messages,
-        Message(id: newId('m_'), senderId: senderId, text: text, createdAt: DateTime.now()),
-      ]),
+      (x) => x.copyWith(
+        messages: [
+          ...x.messages,
+          Message(
+            id: newId('m_'),
+            senderId: senderId,
+            text: text,
+            createdAt: DateTime.now(),
+          ),
+        ],
+      ),
     );
     _mockReply(convId, senderId);
   }
@@ -391,15 +453,17 @@ class ChatNotifier extends Notifier<List<Conversation>> {
         final lines = c.isGroup ? _cannedGroup : _cannedDm;
         await _change(
           convId,
-          (x) => x.copyWith(messages: [
-            ...x.messages,
-            Message(
-              id: newId('m_'),
-              senderId: from,
-              text: lines[_rng.nextInt(lines.length)],
-              createdAt: DateTime.now(),
-            ),
-          ]),
+          (x) => x.copyWith(
+            messages: [
+              ...x.messages,
+              Message(
+                id: newId('m_'),
+                senderId: from,
+                text: lines[_rng.nextInt(lines.length)],
+                createdAt: DateTime.now(),
+              ),
+            ],
+          ),
         );
       } catch (_) {}
     });
@@ -409,8 +473,9 @@ class ChatNotifier extends Notifier<List<Conversation>> {
       _change(convId, (c) => c.copyWith(status: 'blocked'));
 }
 
-final chatProvider =
-    NotifierProvider<ChatNotifier, List<Conversation>>(ChatNotifier.new);
+final chatProvider = NotifierProvider<ChatNotifier, List<Conversation>>(
+  ChatNotifier.new,
+);
 
 // ------------------------------------------------------------- challenges
 
@@ -427,10 +492,11 @@ class ChallengesNotifier extends Notifier<List<Challenge>> {
       _save([for (final c in state) c.id == id ? f(c) : c]);
 
   Future<void> join(String id, String userId) => _change(
-      id,
-      (c) => c.participantIds.contains(userId)
-          ? c
-          : c.copyWith(participantIds: [...c.participantIds, userId]));
+    id,
+    (c) => c.participantIds.contains(userId)
+        ? c
+        : c.copyWith(participantIds: [...c.participantIds, userId]),
+  );
 
   /// One check-in per day. Returns false if already checked in today.
   Future<bool> checkIn(String id, String userId, int amount) async {
@@ -440,13 +506,19 @@ class ChallengesNotifier extends Notifier<List<Challenge>> {
     await _change(
       id,
       (x) => x.copyWith(
-        participantIds:
-            x.participantIds.contains(userId) ? x.participantIds : [...x.participantIds, userId],
-        checkIns: [...x.checkIns, CheckIn(userId: userId, amount: amount, date: today)],
+        participantIds: x.participantIds.contains(userId)
+            ? x.participantIds
+            : [...x.participantIds, userId],
+        checkIns: [
+          ...x.checkIns,
+          CheckIn(userId: userId, amount: amount, date: today),
+        ],
       ),
     );
     await ref.read(usersProvider.notifier).addPoints(userId, 10);
-    await ref.read(pointsProvider.notifier).add(
+    await ref
+        .read(pointsProvider.notifier)
+        .add(
           userId: userId,
           delta: 10,
           label: 'Check-in: ${c.title}',
@@ -459,11 +531,17 @@ class ChallengesNotifier extends Notifier<List<Challenge>> {
   // MOCK (demo tool): fills the community total to the target so the
   // "reward unlocked" state can be shown.
   Future<void> fillToTarget(String id) => _change(
-      id, (c) => c.copyWith(seedProgress: c.seedProgress + (c.target - c.progress).clamp(0, 1 << 30)));
+    id,
+    (c) => c.copyWith(
+      seedProgress: c.seedProgress + (c.target - c.progress).clamp(0, 1 << 30),
+    ),
+  );
 }
 
 final challengesProvider =
-    NotifierProvider<ChallengesNotifier, List<Challenge>>(ChallengesNotifier.new);
+    NotifierProvider<ChallengesNotifier, List<Challenge>>(
+      ChallengesNotifier.new,
+    );
 
 /// Active challenges of the current user's community, closest to the goal
 /// first among those not yet unlocked.
@@ -540,13 +618,14 @@ class LoansNotifier extends Notifier<List<EquipmentLoan>> {
   }
 
   Future<void> setStatus(String loanId, LoanStatus next) => _save([
-        for (final l in state)
-          l.id == loanId ? l.withStatus(next, DateTime.now()) : l
-      ]);
+    for (final l in state)
+      l.id == loanId ? l.withStatus(next, DateTime.now()) : l,
+  ]);
 }
 
-final loansProvider =
-    NotifierProvider<LoansNotifier, List<EquipmentLoan>>(LoansNotifier.new);
+final loansProvider = NotifierProvider<LoansNotifier, List<EquipmentLoan>>(
+  LoansNotifier.new,
+);
 
 // ----------------------------------------------------------------- points
 
@@ -565,34 +644,41 @@ class PointsNotifier extends Notifier<List<PointsEntry>> {
     required String label,
     String? refType,
     String? refId,
-  }) =>
-      _save([
-        ...state,
-        PointsEntry(
-          id: newId('pt_'),
-          userId: userId,
-          delta: delta,
-          label: label,
-          at: DateTime.now(),
-          refType: refType,
-          refId: refId,
-        ),
-      ]);
+  }) => _save([
+    ...state,
+    PointsEntry(
+      id: newId('pt_'),
+      userId: userId,
+      delta: delta,
+      label: label,
+      at: DateTime.now(),
+      refType: refType,
+      refId: refId,
+    ),
+  ]);
 
   /// Removes entries made for one thing, for example when a join is undone.
   Future<void> removeRef(String userId, String refType, String refId) => _save(
-      state.where((e) => !(e.userId == userId && e.refType == refType && e.refId == refId)).toList());
+    state
+        .where(
+          (e) =>
+              !(e.userId == userId && e.refType == refType && e.refId == refId),
+        )
+        .toList(),
+  );
 }
 
-final pointsProvider =
-    NotifierProvider<PointsNotifier, List<PointsEntry>>(PointsNotifier.new);
+final pointsProvider = NotifierProvider<PointsNotifier, List<PointsEntry>>(
+  PointsNotifier.new,
+);
 
 /// The current user's points history, newest first.
 final myPointsHistoryProvider = Provider<List<PointsEntry>>((ref) {
   final me = ref.watch(currentUserProvider);
   if (me == null) return const [];
-  final list = ref.watch(pointsProvider).where((e) => e.userId == me.id).toList()
-    ..sort((a, b) => b.at.compareTo(a.at));
+  final list =
+      ref.watch(pointsProvider).where((e) => e.userId == me.id).toList()
+        ..sort((a, b) => b.at.compareTo(a.at));
   return list;
 });
 
@@ -613,8 +699,9 @@ class LogsNotifier extends Notifier<List<RecommendationLog>> {
   }
 }
 
-final logsProvider =
-    NotifierProvider<LogsNotifier, List<RecommendationLog>>(LogsNotifier.new);
+final logsProvider = NotifierProvider<LogsNotifier, List<RecommendationLog>>(
+  LogsNotifier.new,
+);
 
 // ------------------------------------------------------------- feed state
 
@@ -634,8 +721,29 @@ class FeedFilterNotifier extends Notifier<FeedFilter> {
   void set(FeedFilter f) => state = f;
 }
 
-final feedFilterProvider =
-    NotifierProvider<FeedFilterNotifier, FeedFilter>(FeedFilterNotifier.new);
+final feedFilterProvider = NotifierProvider<FeedFilterNotifier, FeedFilter>(
+  FeedFilterNotifier.new,
+);
+
+/// The two sides of the Equipment tab.
+enum EquipmentSide {
+  lending('Available'),
+  requests('Requests');
+
+  const EquipmentSide(this.label);
+  final String label;
+}
+
+class EquipmentSideNotifier extends Notifier<EquipmentSide> {
+  @override
+  EquipmentSide build() => EquipmentSide.lending;
+  void set(EquipmentSide s) => state = s;
+}
+
+final equipmentSideProvider =
+    NotifierProvider<EquipmentSideNotifier, EquipmentSide>(
+      EquipmentSideNotifier.new,
+    );
 
 /// How many days of posts the feed shows (starts at 7, +7 per tap).
 class FeedWindowNotifier extends Notifier<int> {
@@ -645,8 +753,9 @@ class FeedWindowNotifier extends Notifier<int> {
   void reset() => state = 7;
 }
 
-final feedWindowProvider =
-    NotifierProvider<FeedWindowNotifier, int>(FeedWindowNotifier.new);
+final feedWindowProvider = NotifierProvider<FeedWindowNotifier, int>(
+  FeedWindowNotifier.new,
+);
 
 class FeedData {
   const FeedData(this.posts, this.hasOlder);
@@ -699,9 +808,7 @@ final feedProvider = Provider.family<FeedData, FeedFilter>((ref, filter) {
 final suggestionsProvider = Provider<List<PersonSuggestion>>((ref) {
   final me = ref.watch(currentUserProvider);
   if (me == null) return const [];
-  return ref
-      .watch(peopleMatcherProvider)
-      .suggest(me, ref.watch(usersProvider));
+  return ref.watch(peopleMatcherProvider).suggest(me, ref.watch(usersProvider));
 });
 
 // ---------------------------------------------------------------- utility
@@ -717,6 +824,7 @@ void invalidateAllData(Ref ref) {
   ref.invalidate(logsProvider);
   ref.invalidate(pointsProvider);
   ref.invalidate(feedFilterProvider);
+  ref.invalidate(equipmentSideProvider);
   ref.invalidate(feedWindowProvider);
 }
 

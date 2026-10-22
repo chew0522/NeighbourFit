@@ -186,15 +186,26 @@ class _FeedList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feed = ref.watch(feedProvider(filter));
+    final side = ref.watch(equipmentSideProvider);
+    final isEquipment = filter == FeedFilter.equipment;
+    final posts = isEquipment
+        ? feed.posts
+              .where((p) => p.isRequest == (side == EquipmentSide.requests))
+              .toList()
+        : feed.posts;
     final message = switch (filter) {
       FeedFilter.meetup => 'No meetups yet. Start one?',
-      FeedFilter.equipment => 'Nobody is lending anything yet. Be the first?',
+      FeedFilter.equipment =>
+        side == EquipmentSide.requests
+            ? 'No requests right now. Need something? Ask your neighbours.'
+            : 'Nobody is lending anything yet. Be the first?',
       FeedFilter.forYou => 'Nothing here yet. Be the first to share something.',
     };
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 130),
       children: [
-        if (feed.posts.isEmpty)
+        if (isEquipment) const _EquipmentSwitch(),
+        if (posts.isEmpty)
           SizedBox(
             height: 320,
             child: EmptyState(
@@ -203,6 +214,9 @@ class _FeedList extends ConsumerWidget {
               actionLabel: 'Start something',
               onAction: () => openCreate(
                 context,
+                requestItem: isEquipment && side == EquipmentSide.requests
+                    ? ''
+                    : null,
                 initial: switch (filter) {
                   FeedFilter.meetup => CreateMode.meetup,
                   FeedFilter.equipment => CreateMode.equipment,
@@ -211,13 +225,39 @@ class _FeedList extends ConsumerWidget {
               ),
             ),
           ),
-        for (final p in feed.posts)
+        for (final p in posts)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: PostCard(key: ValueKey(p.id), post: p),
           ),
         _EndCard(hasOlder: feed.hasOlder),
       ],
+    );
+  }
+}
+
+/// "Available" / "Requests" switch at the top of the Equipment tab.
+class _EquipmentSwitch extends ConsumerWidget {
+  const _EquipmentSwitch();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final side = ref.watch(equipmentSideProvider);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12, top: 4),
+      child: SizedBox(
+        width: double.infinity,
+        child: SegmentedButton<EquipmentSide>(
+          showSelectedIcon: false,
+          segments: [
+            for (final v in EquipmentSide.values)
+              ButtonSegment(value: v, label: Text(v.label)),
+          ],
+          selected: {side},
+          onSelectionChanged: (v) =>
+              ref.read(equipmentSideProvider.notifier).set(v.first),
+        ),
+      ),
     );
   }
 }

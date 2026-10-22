@@ -26,7 +26,10 @@ class ChallengeDetailScreen extends ConsumerWidget {
     if (c == null || me == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const EmptyState(icon: Icons.search_off, message: 'Challenge not found.'),
+        body: const EmptyState(
+          icon: Icons.search_off,
+          message: 'Challenge not found.',
+        ),
       );
     }
     final joined = c.participantIds.contains(me.id);
@@ -39,10 +42,15 @@ class ChallengeDetailScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(c.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          Text(
+            c.title,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 4),
-          Text('${daysLeft(c.endsAt, DateTime.now())} days left · ${c.participantIds.length} neighbours joined',
-              style: const TextStyle(color: kMuted)),
+          Text(
+            '${daysLeft(c.endsAt, DateTime.now())} days left · ${c.participantIds.length} neighbours joined',
+            style: const TextStyle(color: kMuted),
+          ),
           const SizedBox(height: 20),
           Card(
             child: Padding(
@@ -50,11 +58,19 @@ class ChallengeDetailScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Our community so far',
-                      style: TextStyle(fontSize: 15, color: kMuted)),
+                  const Text(
+                    'Our community so far',
+                    style: TextStyle(fontSize: 15, color: kMuted),
+                  ),
                   const SizedBox(height: 4),
-                  Text('${_num.format(c.progress)} ${c.unit}',
-                      style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: kPrimary)),
+                  Text(
+                    '${_num.format(c.progress)} ${c.unit}',
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: kPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -66,7 +82,9 @@ class ChallengeDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('Goal: ${_num.format(c.target)} ${c.unit}  ·  ${(c.fraction * 100).round()}%'),
+                  Text(
+                    'Goal: ${_num.format(c.target)} ${c.unit}  ·  ${(c.fraction * 100).round()}%',
+                  ),
                   const Divider(height: 28),
                   Row(
                     children: [
@@ -90,13 +108,22 @@ class ChallengeDetailScreen extends ConsumerWidget {
           Card(
             color: c.unlocked ? kSurfaceGreen : Colors.white,
             child: ListTile(
-              leading: Icon(c.unlocked ? Icons.lock_open : Icons.lock_outline,
-                  color: c.unlocked ? kPrimary : kMuted, size: 28),
-              title: Text(c.unlocked ? 'Unlocked: ${c.reward}' : 'Community reward: ${c.reward}',
-                  style: const TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: Text(c.unlocked
-                  ? 'Your community did it together!'
-                  : 'Unlocks when we reach ${_num.format(c.target)} ${c.unit}.'),
+              leading: Icon(
+                c.unlocked ? Icons.lock_open : Icons.lock_outline,
+                color: c.unlocked ? kPrimary : kMuted,
+                size: 28,
+              ),
+              title: Text(
+                c.unlocked
+                    ? 'Unlocked: ${c.reward}'
+                    : 'Community reward: ${c.reward}',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              subtitle: Text(
+                c.unlocked
+                    ? 'Your community did it together!'
+                    : 'Unlocks when we reach ${_num.format(c.target)} ${c.unit}.',
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -109,11 +136,16 @@ class ChallengeDetailScreen extends ConsumerWidget {
               child: const Text('Join the challenge'),
             )
           else if (doneToday)
-            const OutlinedButton(onPressed: null, child: Text("Checked in today. See you tomorrow!"))
+            const OutlinedButton(
+              onPressed: null,
+              child: Text("Checked in today. See you tomorrow!"),
+            )
           else ...[
             FilledButton(
               onPressed: () => _checkIn(ref, c, c.quickAmount),
-              child: Text('I did it today (+${_num.format(c.quickAmount)} ${c.unit})'),
+              child: Text(
+                'I did it today (+${_num.format(c.quickAmount)} ${c.unit})',
+              ),
             ),
             const SizedBox(height: 8),
             OutlinedButton(
@@ -122,8 +154,10 @@ class ChallengeDetailScreen extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: 12),
-          const Text('Check-ins earn +10 points. Only community totals are shown, never a ranking.',
-              style: TextStyle(color: kMuted, fontSize: 14)),
+          const Text(
+            'Check-ins earn +10 points. Only community totals are shown, never a ranking.',
+            style: TextStyle(color: kMuted, fontSize: 14),
+          ),
         ],
       ),
     );
@@ -132,11 +166,21 @@ class ChallengeDetailScreen extends ConsumerWidget {
   Future<void> _checkIn(WidgetRef ref, Challenge c, int amount) async {
     final me = ref.read(currentUserProvider);
     if (me == null) return;
-    final ok = await ref.read(challengesProvider.notifier).checkIn(c.id, me.id, amount);
-    showSnack(ok ? 'Checked in: +$amount ${c.unit}, +10 points' : 'You already checked in today.');
+    final ok = await ref
+        .read(challengesProvider.notifier)
+        .checkIn(c.id, me.id, amount);
+    showSnack(
+      ok
+          ? 'Checked in: +$amount ${c.unit}, +10 points'
+          : 'You already checked in today.',
+    );
   }
 
-  Future<void> _enterAmount(BuildContext context, WidgetRef ref, Challenge c) async {
+  Future<void> _enterAmount(
+    BuildContext context,
+    WidgetRef ref,
+    Challenge c,
+  ) async {
     final ctrl = TextEditingController(text: '${c.quickAmount}');
     final amount = await showDialog<int>(
       context: context,
@@ -149,7 +193,10 @@ class ChallengeDetailScreen extends ConsumerWidget {
           decoration: InputDecoration(suffixText: c.unit),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, int.tryParse(ctrl.text.trim())),
             child: const Text('Check in'),

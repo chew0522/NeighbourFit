@@ -13,8 +13,14 @@ void main() {
   });
 
   test('ignores normal chat', () {
-    expect(PrivacyGuard.looksSensitive('See you at 6:30 at the park!'), isFalse);
+    expect(
+      PrivacyGuard.looksSensitive('See you at 6:30 at the park!'),
+      isFalse,
+    );
     expect(PrivacyGuard.looksSensitive('We walked 10000 steps'), isFalse);
-    expect(PrivacyGuard.looksSensitive('Is the path stroller-friendly?'), isFalse);
+    expect(
+      PrivacyGuard.looksSensitive('Is the path stroller-friendly?'),
+      isFalse,
+    );
   });
 }

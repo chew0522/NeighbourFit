@@ -34,7 +34,9 @@ class ChallengesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
     final list = ref.watch(myChallengesProvider);
-    final joined = list.where((c) => me != null && c.participantIds.contains(me.id)).length;
+    final joined = list
+        .where((c) => me != null && c.participantIds.contains(me.id))
+        .length;
     final unlocked = list.where((c) => c.unlocked).length;
 
     return Scaffold(
@@ -84,23 +86,31 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          decoration: BoxDecoration(
-            color: kSurfaceGreen,
-            borderRadius: BorderRadius.circular(14),
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      decoration: BoxDecoration(
+        color: kSurfaceGreen,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: kPrimary,
+            ),
           ),
-          child: Column(
-            children: [
-              Text(value,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: kPrimary)),
-              Text(label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12, color: kText)),
-            ],
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12, color: kText),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }
 
 class _ChallengeTile extends ConsumerWidget {
@@ -120,7 +130,10 @@ class _ChallengeTile extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => ChallengeDetailScreen(challengeId: c.id))),
+          MaterialPageRoute(
+            builder: (_) => ChallengeDetailScreen(challengeId: c.id),
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -131,7 +144,10 @@ class _ChallengeTile extends ConsumerWidget {
                   Container(
                     width: 46,
                     height: 46,
-                    decoration: const BoxDecoration(color: kSurfaceGreen, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: kSurfaceGreen,
+                      shape: BoxShape.circle,
+                    ),
                     child: Icon(challengeIcon(c.kind), color: kPrimary),
                   ),
                   const SizedBox(width: 12),
@@ -139,10 +155,17 @@ class _ChallengeTile extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(c.title,
-                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                        Text('$left days left · ${c.participantIds.length} neighbours',
-                            style: const TextStyle(color: kMuted, fontSize: 13)),
+                        Text(
+                          c.title,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          '$left days left · ${c.participantIds.length} neighbours',
+                          style: const TextStyle(color: kMuted, fontSize: 13),
+                        ),
                       ],
                     ),
                   ),
@@ -165,20 +188,31 @@ class _ChallengeTile extends ConsumerWidget {
               ),
               const SizedBox(height: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: c.unlocked ? kSurfaceGreen : kAccentSoft,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(c.unlocked ? Icons.lock_open : Icons.card_giftcard,
-                        size: 20, color: c.unlocked ? kPrimary : kAccentDark),
+                    Icon(
+                      c.unlocked ? Icons.lock_open : Icons.card_giftcard,
+                      size: 20,
+                      color: c.unlocked ? kPrimary : kAccentDark,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        c.unlocked ? 'Unlocked: ${c.reward}' : 'Reward: ${c.reward}',
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        c.unlocked
+                            ? 'Unlocked: ${c.reward}'
+                            : 'Reward: ${c.reward}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -188,10 +222,17 @@ class _ChallengeTile extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: FilledButton(
-                  style: FilledButton.styleFrom(minimumSize: const Size(110, 42)),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ChallengeDetailScreen(challengeId: c.id))),
-                  child: Text(doneToday ? 'Done today' : (joined ? 'Check in' : 'Join')),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(110, 42),
+                  ),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ChallengeDetailScreen(challengeId: c.id),
+                    ),
+                  ),
+                  child: Text(
+                    doneToday ? 'Done today' : (joined ? 'Check in' : 'Join'),
+                  ),
                 ),
               ),
             ],

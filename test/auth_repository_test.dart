@@ -12,7 +12,11 @@ void main() {
   });
 
   test('registers and logs in, ignoring email case and spaces', () async {
-    await auth.register(email: 'Mei@Example.com ', password: 'secret1', userId: 'u1');
+    await auth.register(
+      email: 'Mei@Example.com ',
+      password: 'secret1',
+      userId: 'u1',
+    );
     expect(auth.login('mei@example.com', 'secret1'), 'u1');
     expect(auth.login('  MEI@example.COM', 'secret1'), 'u1');
   });

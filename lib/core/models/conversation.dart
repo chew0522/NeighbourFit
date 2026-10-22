@@ -16,20 +16,20 @@ class Message {
   final bool isSystem;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'senderId': senderId,
-        'text': text,
-        'createdAt': createdAt.toIso8601String(),
-        'isSystem': isSystem,
-      };
+    'id': id,
+    'senderId': senderId,
+    'text': text,
+    'createdAt': createdAt.toIso8601String(),
+    'isSystem': isSystem,
+  };
 
   factory Message.fromJson(Map<String, dynamic> j) => Message(
-        id: j['id'] as String? ?? '',
-        senderId: j['senderId'] as String? ?? '',
-        text: j['text'] as String? ?? '',
-        createdAt: parseDt(j['createdAt']),
-        isSystem: j['isSystem'] as bool? ?? false,
-      );
+    id: j['id'] as String? ?? '',
+    senderId: j['senderId'] as String? ?? '',
+    text: j['text'] as String? ?? '',
+    createdAt: parseDt(j['createdAt']),
+    isSystem: j['isSystem'] as bool? ?? false,
+  );
 }
 
 /// 'dm' or 'group'. Group chats belong to a Meetup through [sourcePostId].
@@ -62,34 +62,33 @@ class Conversation {
     List<String>? memberIds,
     String? status,
     List<Message>? messages,
-  }) =>
-      Conversation(
-        id: id,
-        type: type,
-        memberIds: memberIds ?? this.memberIds,
-        sourcePostId: sourcePostId,
-        title: title,
-        status: status ?? this.status,
-        messages: messages ?? this.messages,
-      );
+  }) => Conversation(
+    id: id,
+    type: type,
+    memberIds: memberIds ?? this.memberIds,
+    sourcePostId: sourcePostId,
+    title: title,
+    status: status ?? this.status,
+    messages: messages ?? this.messages,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': type,
-        'memberIds': memberIds,
-        'sourcePostId': sourcePostId,
-        'title': title,
-        'status': status,
-        'messages': messages.map((e) => e.toJson()).toList(),
-      };
+    'id': id,
+    'type': type,
+    'memberIds': memberIds,
+    'sourcePostId': sourcePostId,
+    'title': title,
+    'status': status,
+    'messages': messages.map((e) => e.toJson()).toList(),
+  };
 
   factory Conversation.fromJson(Map<String, dynamic> j) => Conversation(
-        id: j['id'] as String,
-        type: j['type'] as String? ?? 'dm',
-        memberIds: strList(j['memberIds']),
-        sourcePostId: j['sourcePostId'] as String?,
-        title: j['title'] as String?,
-        status: j['status'] as String? ?? 'active',
-        messages: mapList(j['messages']).map(Message.fromJson).toList(),
-      );
+    id: j['id'] as String,
+    type: j['type'] as String? ?? 'dm',
+    memberIds: strList(j['memberIds']),
+    sourcePostId: j['sourcePostId'] as String?,
+    title: j['title'] as String?,
+    status: j['status'] as String? ?? 'active',
+    messages: mapList(j['messages']).map(Message.fromJson).toList(),
+  );
 }

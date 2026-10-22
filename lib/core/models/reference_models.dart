@@ -14,11 +14,11 @@ class Community {
   final double lng;
 
   factory Community.fromJson(Map<String, dynamic> j) => Community(
-        id: j['id'] as String,
-        name: j['name'] as String? ?? '',
-        lat: (j['lat'] as num?)?.toDouble() ?? 0,
-        lng: (j['lng'] as num?)?.toDouble() ?? 0,
-      );
+    id: j['id'] as String,
+    name: j['name'] as String? ?? '',
+    lat: (j['lat'] as num?)?.toDouble() ?? 0,
+    lng: (j['lng'] as num?)?.toDouble() ?? 0,
+  );
 }
 
 class PresetLocation {
@@ -28,7 +28,6 @@ class PresetLocation {
     required this.communityId,
     required this.lat,
     required this.lng,
-    this.accessibilityNotes = '',
   });
 
   final String id;
@@ -36,19 +35,17 @@ class PresetLocation {
   final String communityId;
   final double lat;
   final double lng;
-  final String accessibilityNotes;
 
   String get mapsUrl =>
       'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
 
   factory PresetLocation.fromJson(Map<String, dynamic> j) => PresetLocation(
-        id: j['id'] as String,
-        name: j['name'] as String? ?? '',
-        communityId: j['communityId'] as String? ?? '',
-        lat: (j['lat'] as num?)?.toDouble() ?? 0,
-        lng: (j['lng'] as num?)?.toDouble() ?? 0,
-        accessibilityNotes: j['accessibilityNotes'] as String? ?? '',
-      );
+    id: j['id'] as String,
+    name: j['name'] as String? ?? '',
+    communityId: j['communityId'] as String? ?? '',
+    lat: (j['lat'] as num?)?.toDouble() ?? 0,
+    lng: (j['lng'] as num?)?.toDouble() ?? 0,
+  );
 }
 
 class Voucher {
@@ -65,11 +62,11 @@ class Voucher {
   final int pointsCost;
 
   factory Voucher.fromJson(Map<String, dynamic> j) => Voucher(
-        id: j['id'] as String,
-        merchant: j['merchant'] as String? ?? '',
-        title: j['title'] as String? ?? '',
-        pointsCost: (j['pointsCost'] as num?)?.toInt() ?? 0,
-      );
+    id: j['id'] as String,
+    merchant: j['merchant'] as String? ?? '',
+    title: j['title'] as String? ?? '',
+    pointsCost: (j['pointsCost'] as num?)?.toInt() ?? 0,
+  );
 }
 
 /// Reference data loaded from assets once at start-up.
@@ -111,17 +108,17 @@ class ReferenceData {
   factory ReferenceData.fromJson(
     Map<String, dynamic> locationsJson,
     List<dynamic> vouchersJson,
-  ) =>
-      ReferenceData(
-        communities:
-            mapList(locationsJson['communities']).map(Community.fromJson).toList(),
-        locations: mapList(locationsJson['locations'])
-            .map(PresetLocation.fromJson)
-            .toList(),
-        vouchers: vouchersJson
-            .whereType<Map>()
-            .map((e) => Voucher.fromJson(Map<String, dynamic>.from(e)))
-            .toList(),
-        residentCodes: strList(locationsJson['residentCodes']),
-      );
+  ) => ReferenceData(
+    communities: mapList(
+      locationsJson['communities'],
+    ).map(Community.fromJson).toList(),
+    locations: mapList(
+      locationsJson['locations'],
+    ).map(PresetLocation.fromJson).toList(),
+    vouchers: vouchersJson
+        .whereType<Map>()
+        .map((e) => Voucher.fromJson(Map<String, dynamic>.from(e)))
+        .toList(),
+    residentCodes: strList(locationsJson['residentCodes']),
+  );
 }

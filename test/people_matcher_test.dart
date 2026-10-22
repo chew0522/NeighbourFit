@@ -28,26 +28,26 @@ void main() {
     List<String> langs = const ['en'],
     String agePref = 'same',
     Map<String, FieldVisibility>? vis,
-  }) =>
-      UserProfile(
-        id: id,
-        nickname: id,
-        communityId: community,
-        sports: sports,
-        timeSlots: slots,
-        ageGroup: age,
-        level: level,
-        languages: langs,
-        agePref: agePref,
-        visibility: vis ??
-            const {
-              'ageGroup': FieldVisibility.everyone,
-              'gender': FieldVisibility.onlyMe,
-              'level': FieldVisibility.everyone,
-              'timeSlots': FieldVisibility.everyone,
-            },
-        createdAt: now,
-      );
+  }) => UserProfile(
+    id: id,
+    nickname: id,
+    communityId: community,
+    sports: sports,
+    timeSlots: slots,
+    ageGroup: age,
+    level: level,
+    languages: langs,
+    agePref: agePref,
+    visibility:
+        vis ??
+        const {
+          'ageGroup': FieldVisibility.everyone,
+          'gender': FieldVisibility.onlyMe,
+          'level': FieldVisibility.everyone,
+          'timeSlots': FieldVisibility.everyone,
+        },
+    createdAt: now,
+  );
 
   test('identical profile in the same community scores 100', () {
     final s = matcher.scorePair(u('me'), u('a'))!;
@@ -57,7 +57,11 @@ void main() {
   });
 
   test('worked example: half the time slots overlap', () {
-    final me = u('me', slots: const [TimeSlot.morning, TimeSlot.weekend], langs: const ['en', 'zh']);
+    final me = u(
+      'me',
+      slots: const [TimeSlot.morning, TimeSlot.weekend],
+      langs: const ['en', 'zh'],
+    );
     final other = u('a', langs: const ['ms', 'en']);
     // sport 35 + time 0.5*20 + age 20 + distance 15 + level/lang 10 = 90
     expect(matcher.scorePair(me, other)!.score, closeTo(90, 1e-6));
@@ -73,14 +77,16 @@ void main() {
 
   test('age factor is dropped when the other hides their age group', () {
     final me = u('me');
-    final hidden = u('a',
-        age: AgeGroup.g60plus,
-        vis: const {
-          'ageGroup': FieldVisibility.onlyMe,
-          'gender': FieldVisibility.onlyMe,
-          'level': FieldVisibility.everyone,
-          'timeSlots': FieldVisibility.everyone,
-        });
+    final hidden = u(
+      'a',
+      age: AgeGroup.g60plus,
+      vis: const {
+        'ageGroup': FieldVisibility.onlyMe,
+        'gender': FieldVisibility.onlyMe,
+        'level': FieldVisibility.everyone,
+        'timeSlots': FieldVisibility.everyone,
+      },
+    );
     expect(matcher.scorePair(me, hidden)!.fits.containsKey('age'), isFalse);
   });
 
@@ -96,20 +102,31 @@ void main() {
     test('self, blocked either way and dismissed are excluded', () {
       final me = u('me');
       expect(matcher.scorePair(me, me), isNull);
-      expect(matcher.scorePair(me.copyWith(blockedUserIds: ['a']), u('a')), isNull);
-      expect(matcher.scorePair(me, u('a').copyWith(blockedUserIds: ['me'])), isNull);
-      expect(matcher.scorePair(me.copyWith(dismissedSuggestionIds: ['a']), u('a')), isNull);
+      expect(
+        matcher.scorePair(me.copyWith(blockedUserIds: ['a']), u('a')),
+        isNull,
+      );
+      expect(
+        matcher.scorePair(me, u('a').copyWith(blockedUserIds: ['me'])),
+        isNull,
+      );
+      expect(
+        matcher.scorePair(me.copyWith(dismissedSuggestionIds: ['a']), u('a')),
+        isNull,
+      );
     });
 
     test('score below the minimum is not suggested', () {
       final me = u('me', slots: const [TimeSlot.morning], agePref: 'same');
-      final poor = u('a',
-          community: 'c2',
-          sports: const [Sport.badminton],
-          slots: const [TimeSlot.evening],
-          age: AgeGroup.g60plus,
-          level: Level.advanced,
-          langs: const ['ta']);
+      final poor = u(
+        'a',
+        community: 'c2',
+        sports: const [Sport.badminton],
+        slots: const [TimeSlot.evening],
+        age: AgeGroup.g60plus,
+        level: Level.advanced,
+        langs: const ['ta'],
+      );
       expect(matcher.suggest(me, [poor]), isEmpty);
     });
 

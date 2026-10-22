@@ -20,28 +20,28 @@ class PointsEntry {
   final String label;
   final DateTime at;
 
-  /// What caused it: 'join' (refId = meetup id), 'checkin' (challenge id),
+  /// What caused it: 'checkin' (challenge id),
   /// 'redeem' (voucher id) or 'seed'.
   final String? refType;
   final String? refId;
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'userId': userId,
-        'delta': delta,
-        'label': label,
-        'at': at.toIso8601String(),
-        'refType': refType,
-        'refId': refId,
-      };
+    'id': id,
+    'userId': userId,
+    'delta': delta,
+    'label': label,
+    'at': at.toIso8601String(),
+    'refType': refType,
+    'refId': refId,
+  };
 
   factory PointsEntry.fromJson(Map<String, dynamic> j) => PointsEntry(
-        id: j['id'] as String,
-        userId: j['userId'] as String? ?? '',
-        delta: (j['delta'] as num?)?.toInt() ?? 0,
-        label: j['label'] as String? ?? '',
-        at: parseDt(j['at']),
-        refType: j['refType'] as String?,
-        refId: j['refId'] as String?,
-      );
+    id: j['id'] as String,
+    userId: j['userId'] as String? ?? '',
+    delta: (j['delta'] as num?)?.toInt() ?? 0,
+    label: j['label'] as String? ?? '',
+    at: parseDt(j['at']),
+    refType: j['refType'] as String?,
+    refId: j['refId'] as String?,
+  );
 }

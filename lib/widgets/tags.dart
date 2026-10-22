@@ -71,7 +71,7 @@ class TypeLabel extends StatelessWidget {
   }
 }
 
-/// Small tag with icon and tiny label (shield, accessible, etc).
+/// Small tag with icon and tiny label (level, language, etc).
 class InfoTag extends StatelessWidget {
   const InfoTag({super.key, required this.icon, required this.label});
 

@@ -32,17 +32,21 @@ Future<void> main() async {
   var matching = MatchingConfig.defaults();
   try {
     matching = MatchingConfig.fromJson(
-      jsonDecode(await rootBundle.loadString('assets/config/matching_config.json'))
+      jsonDecode(
+            await rootBundle.loadString('assets/config/matching_config.json'),
+          )
           as Map<String, dynamic>,
     );
   } catch (_) {}
 
-  runApp(ProviderScope(
-    overrides: [
-      storeProvider.overrideWithValue(store),
-      referenceProvider.overrideWithValue(reference),
-      matchingConfigProvider.overrideWithValue(matching),
-    ],
-    child: const NeighbourFitApp(),
-  ));
+  runApp(
+    ProviderScope(
+      overrides: [
+        storeProvider.overrideWithValue(store),
+        referenceProvider.overrideWithValue(reference),
+        matchingConfigProvider.overrideWithValue(matching),
+      ],
+      child: const NeighbourFitApp(),
+    ),
+  );
 }

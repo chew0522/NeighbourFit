@@ -20,7 +20,9 @@ class MeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(currentUserProvider);
     final met = ref.watch(neighboursMetProvider);
-    final community = ref.watch(referenceProvider).community(me?.communityId ?? '')?.name ?? '';
+    final community =
+        ref.watch(referenceProvider).community(me?.communityId ?? '')?.name ??
+        '';
     void go(Widget page) =>
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
 
@@ -42,9 +44,17 @@ class MeScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(me.nickname,
-                                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-                              Text(community, style: const TextStyle(color: kMuted)),
+                              Text(
+                                me.nickname,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              Text(
+                                community,
+                                style: const TextStyle(color: kMuted),
+                              ),
                               const SizedBox(height: 6),
                               Text(
                                 "Neighbours you've exercised with this month: $met",
@@ -96,7 +106,12 @@ class MeScreen extends ConsumerWidget {
 }
 
 class _Tile extends StatelessWidget {
-  const _Tile({required this.icon, required this.label, required this.onTap, this.detail});
+  const _Tile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.detail,
+  });
 
   final IconData icon;
   final String label;
@@ -117,15 +132,26 @@ class _Tile extends StatelessWidget {
               Container(
                 width: 56,
                 height: 56,
-                decoration: const BoxDecoration(color: kSurfaceGreen, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                  color: kSurfaceGreen,
+                  shape: BoxShape.circle,
+                ),
                 child: Icon(icon, size: 30, color: kPrimary),
               ),
               const SizedBox(height: 10),
-              Text(label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               if (detail != null)
-                Text(detail!, style: const TextStyle(color: kMuted, fontSize: 14)),
+                Text(
+                  detail!,
+                  style: const TextStyle(color: kMuted, fontSize: 14),
+                ),
             ],
           ),
         ),

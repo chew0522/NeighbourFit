@@ -45,8 +45,13 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen> {
                 children: [
                   const Icon(Icons.stars_rounded, size: 18, color: kPrimary),
                   const SizedBox(width: 6),
-                  Text('${me.points}',
-                      style: const TextStyle(fontWeight: FontWeight.w800, color: kPrimary)),
+                  Text(
+                    '${me.points}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: kPrimary,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -72,7 +77,11 @@ class _RewardsScreenState extends ConsumerState<RewardsScreen> {
 
 /// Small bar with three icons and short labels.
 class _MiniBar extends StatelessWidget {
-  const _MiniBar({required this.index, required this.onTap, this.walletCount = 0});
+  const _MiniBar({
+    required this.index,
+    required this.onTap,
+    this.walletCount = 0,
+  });
 
   final int index;
   final int walletCount;
@@ -108,16 +117,23 @@ class _MiniBar extends StatelessWidget {
                           label: Text('$walletCount'),
                           backgroundColor: kAccent,
                           textColor: kText,
-                          child: Icon(items[i].$1,
-                              size: 24, color: i == index ? kPrimary : kMuted),
+                          child: Icon(
+                            items[i].$1,
+                            size: 24,
+                            color: i == index ? kPrimary : kMuted,
+                          ),
                         ),
                         const SizedBox(height: 2),
-                        Text(items[i].$2,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: i == index ? FontWeight.w800 : FontWeight.w500,
-                              color: i == index ? kPrimary : kMuted,
-                            )),
+                        Text(
+                          items[i].$2,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: i == index
+                                ? FontWeight.w800
+                                : FontWeight.w500,
+                            color: i == index ? kPrimary : kMuted,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -133,16 +149,19 @@ class _MiniBar extends StatelessWidget {
 // ----------------------------------------------------------------- rewards
 
 Widget _sectionHeader(String title, String subtitle) => Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 2),
-          Text(subtitle, style: const TextStyle(color: kMuted, fontSize: 14)),
-        ],
+  padding: const EdgeInsets.only(bottom: 12),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
       ),
-    );
+      const SizedBox(height: 2),
+      Text(subtitle, style: const TextStyle(color: kMuted, fontSize: 14)),
+    ],
+  ),
+);
 
 /// Points, community rewards (shared, swipe row) and the voucher store.
 class _RewardsTab extends ConsumerWidget {
@@ -166,23 +185,41 @@ class _RewardsTab extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
             child: Column(
               children: [
-                const Text('Your points', style: TextStyle(color: kMuted, fontSize: 15)),
+                const Text(
+                  'Your points',
+                  style: TextStyle(color: kMuted, fontSize: 15),
+                ),
                 const SizedBox(height: 4),
-                Text('${me.points}',
-                    style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, color: kPrimary)),
+                Text(
+                  '${me.points}',
+                  style: const TextStyle(
+                    fontSize: 44,
+                    fontWeight: FontWeight.w800,
+                    color: kPrimary,
+                  ),
+                ),
                 const SizedBox(height: 6),
-                const Text('+10 per challenge check-in · +20 per meetup you join',
-                    textAlign: TextAlign.center, style: TextStyle(fontSize: 14)),
+                const Text(
+                  '+10 points for every challenge check-in',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14),
+                ),
               ],
             ),
           ),
         ),
         const SizedBox(height: 24),
-        _sectionHeader('Community rewards', 'Unlocked together. Tap one to open its challenge.'),
+        _sectionHeader(
+          'Community rewards',
+          'Unlocked together. Tap one to open its challenge.',
+        ),
         if (challenges.isEmpty)
           const Padding(
             padding: EdgeInsets.only(bottom: 16),
-            child: Text('No active challenges right now.', style: TextStyle(color: kMuted)),
+            child: Text(
+              'No active challenges right now.',
+              style: TextStyle(color: kMuted),
+            ),
           )
         else
           SizedBox(
@@ -192,11 +229,15 @@ class _RewardsTab extends ConsumerWidget {
               clipBehavior: Clip.none,
               itemCount: challenges.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) => _CommunityRewardCard(challenge: challenges[i]),
+              itemBuilder: (_, i) =>
+                  _CommunityRewardCard(challenge: challenges[i]),
             ),
           ),
         const SizedBox(height: 28),
-        _sectionHeader('Voucher store', 'Spend your points on deals from local businesses.'),
+        _sectionHeader(
+          'Voucher store',
+          'Spend your points on deals from local businesses.',
+        ),
         for (final v in data.vouchers)
           Padding(
             padding: const EdgeInsets.only(bottom: 14),
@@ -208,8 +249,10 @@ class _RewardsTab extends ConsumerWidget {
                     Container(
                       width: 48,
                       height: 48,
-                      decoration:
-                          const BoxDecoration(color: kSurfaceGreen, shape: BoxShape.circle),
+                      decoration: const BoxDecoration(
+                        color: kSurfaceGreen,
+                        shape: BoxShape.circle,
+                      ),
                       child: const Icon(Icons.storefront, color: kPrimary),
                     ),
                     const SizedBox(width: 14),
@@ -217,21 +260,33 @@ class _RewardsTab extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(v.title,
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                          Text(
+                            v.title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                           const SizedBox(height: 3),
-                          Text(v.merchant, style: const TextStyle(color: kMuted, fontSize: 14)),
+                          Text(
+                            v.merchant,
+                            style: const TextStyle(color: kMuted, fontSize: 14),
+                          ),
                           const SizedBox(height: 6),
                           _PriceTag(
                             cost: v.pointsCost,
-                            short: me.points < v.pointsCost ? v.pointsCost - me.points : 0,
+                            short: me.points < v.pointsCost
+                                ? v.pointsCost - me.points
+                                : 0,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 10),
                     FilledButton(
-                      style: FilledButton.styleFrom(minimumSize: const Size(84, 44)),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(84, 44),
+                      ),
                       onPressed: me.points >= v.pointsCost
                           ? () => _redeem(context, ref, v, onViewWallet)
                           : null,
@@ -243,13 +298,21 @@ class _RewardsTab extends ConsumerWidget {
             ),
           ),
         const SizedBox(height: 4),
-        const Text('Vouchers are a demo. No real merchant system is connected.',
-            textAlign: TextAlign.center, style: TextStyle(color: kMuted, fontSize: 13)),
+        const Text(
+          'Vouchers are a demo. No real merchant system is connected.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: kMuted, fontSize: 13),
+        ),
       ],
     );
   }
 
-  Future<void> _redeem(BuildContext context, WidgetRef ref, Voucher v, VoidCallback view) async {
+  Future<void> _redeem(
+    BuildContext context,
+    WidgetRef ref,
+    Voucher v,
+    VoidCallback view,
+  ) async {
     final me = ref.read(currentUserProvider);
     if (me == null) return;
     final ok = await confirmDialog(
@@ -287,19 +350,29 @@ class _PriceTag extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.stars_rounded, size: 15, color: affordable ? kPrimary : kAccentDark),
+              Icon(
+                Icons.stars_rounded,
+                size: 15,
+                color: affordable ? kPrimary : kAccentDark,
+              ),
               const SizedBox(width: 4),
-              Text('$cost points',
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: affordable ? kPrimary : kAccentDark)),
+              Text(
+                '$cost points',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: affordable ? kPrimary : kAccentDark,
+                ),
+              ),
             ],
           ),
         ),
         if (!affordable) ...[
           const SizedBox(width: 8),
-          Text('$short to go', style: const TextStyle(color: kMuted, fontSize: 12)),
+          Text(
+            '$short to go',
+            style: const TextStyle(color: kMuted, fontSize: 12),
+          ),
         ],
       ],
     );
@@ -321,7 +394,10 @@ class _CommunityRewardCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => ChallengeDetailScreen(challengeId: c.id))),
+            MaterialPageRoute(
+              builder: (_) => ChallengeDetailScreen(challengeId: c.id),
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -336,23 +412,33 @@ class _CommunityRewardCard extends StatelessWidget {
                         color: c.unlocked ? kSurfaceGreen : kAccentSoft,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(c.unlocked ? Icons.lock_open : challengeIcon(c.kind),
-                          size: 22, color: c.unlocked ? kPrimary : kAccentDark),
+                      child: Icon(
+                        c.unlocked ? Icons.lock_open : challengeIcon(c.kind),
+                        size: 22,
+                        color: c.unlocked ? kPrimary : kAccentDark,
+                      ),
                     ),
                     const Spacer(),
                     const Icon(Icons.chevron_right, color: kMuted),
                   ],
                 ),
                 const SizedBox(height: 10),
-                Text(c.reward,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                Text(
+                  c.reward,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(c.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: kMuted, fontSize: 13)),
+                Text(
+                  c.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: kMuted, fontSize: 13),
+                ),
                 const Spacer(),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
@@ -364,11 +450,16 @@ class _CommunityRewardCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(c.unlocked ? 'Unlocked!' : '${(c.fraction * 100).round()}% there',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: c.unlocked ? FontWeight.w800 : FontWeight.w500,
-                        color: c.unlocked ? kPrimary : kMuted)),
+                Text(
+                  c.unlocked
+                      ? 'Unlocked!'
+                      : '${(c.fraction * 100).round()}% there',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: c.unlocked ? FontWeight.w800 : FontWeight.w500,
+                    color: c.unlocked ? kPrimary : kMuted,
+                  ),
+                ),
               ],
             ),
           ),
@@ -419,20 +510,35 @@ class _VouchersTab extends ConsumerWidget {
                         Container(
                           width: 44,
                           height: 44,
-                          decoration:
-                              const BoxDecoration(color: kSurfaceGreen, shape: BoxShape.circle),
-                          child: const Icon(Icons.confirmation_number_outlined, color: kPrimary),
+                          decoration: const BoxDecoration(
+                            color: kSurfaceGreen,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.confirmation_number_outlined,
+                            color: kPrimary,
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(data.voucher(r.voucherId)?.title ?? 'Voucher',
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                              Text(
+                                data.voucher(r.voucherId)?.title ?? 'Voucher',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
                               const SizedBox(height: 2),
-                              Text('${data.voucher(r.voucherId)?.merchant ?? ''} · ${fmtDate(r.at)}',
-                                  style: const TextStyle(color: kMuted, fontSize: 13)),
+                              Text(
+                                '${data.voucher(r.voucherId)?.merchant ?? ''} · ${fmtDate(r.at)}',
+                                style: const TextStyle(
+                                  color: kMuted,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -450,7 +556,10 @@ class _VouchersTab extends ConsumerWidget {
                         r.code,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: 1.2),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                     ),
                   ],
@@ -474,11 +583,16 @@ class _HistoryTab extends ConsumerWidget {
     if (entries.isEmpty) {
       return const EmptyState(
         icon: Icons.history_rounded,
-        message: 'No points yet. Join a meetup or check in to a challenge to start earning.',
+        message:
+            'No points yet. Join a meetup or check in to a challenge to start earning.',
       );
     }
-    final earned = entries.where((e) => e.delta > 0).fold<int>(0, (a, e) => a + e.delta);
-    final spent = entries.where((e) => e.delta < 0).fold<int>(0, (a, e) => a - e.delta);
+    final earned = entries
+        .where((e) => e.delta > 0)
+        .fold<int>(0, (a, e) => a + e.delta);
+    final spent = entries
+        .where((e) => e.delta < 0)
+        .fold<int>(0, (a, e) => a - e.delta);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -496,7 +610,10 @@ class _HistoryTab extends ConsumerWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: Card(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 16,
+                ),
                 child: Row(
                   children: [
                     Container(
@@ -516,22 +633,31 @@ class _HistoryTab extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(e.label,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                          Text(
+                            e.label,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                           const SizedBox(height: 3),
-                          Text(timeAgo(e.at, DateTime.now()),
-                              style: const TextStyle(color: kMuted, fontSize: 13)),
+                          Text(
+                            timeAgo(e.at, DateTime.now()),
+                            style: const TextStyle(color: kMuted, fontSize: 13),
+                          ),
                         ],
                       ),
                     ),
-                    Text('${e.delta > 0 ? '+' : ''}${e.delta}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: e.delta > 0 ? kPrimary : kAccentDark,
-                        )),
+                    Text(
+                      '${e.delta > 0 ? '+' : ''}${e.delta}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: e.delta > 0 ? kPrimary : kAccentDark,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -543,7 +669,11 @@ class _HistoryTab extends ConsumerWidget {
 }
 
 class _Summary extends StatelessWidget {
-  const _Summary({required this.label, required this.value, required this.color});
+  const _Summary({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   final String label;
   final String value;
@@ -551,19 +681,28 @@ class _Summary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1))],
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1)),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
           ),
-          child: Column(
-            children: [
-              Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: color)),
-              Text(label, style: const TextStyle(color: kMuted, fontSize: 13)),
-            ],
-          ),
-        ),
-      );
+          Text(label, style: const TextStyle(color: kMuted, fontSize: 13)),
+        ],
+      ),
+    ),
+  );
 }

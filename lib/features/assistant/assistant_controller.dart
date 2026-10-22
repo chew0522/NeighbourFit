@@ -23,6 +23,7 @@ class AssistantMessage {
     this.results = const [],
     this.logId,
     this.note,
+    this.requestItem,
     required this.at,
   });
 
@@ -33,6 +34,10 @@ class AssistantMessage {
 
   /// Small grey line, e.g. when the offline parser was used.
   final String? note;
+
+  /// Set when nobody can lend the item: the chat offers to post a request.
+  /// May be empty when the item is unknown.
+  final String? requestItem;
   final DateTime at;
 }
 
@@ -57,7 +62,10 @@ class AssistantNotifier extends Notifier<AssistantState> {
     if (me == null || text.isEmpty || state.busy) return;
     final now = DateTime.now();
     state = AssistantState(
-      messages: [...state.messages, AssistantMessage(fromUser: true, text: text, at: now)],
+      messages: [
+        ...state.messages,
+        AssistantMessage(fromUser: true, text: text, at: now),
+      ],
       busy: true,
     );
 
@@ -91,15 +99,17 @@ class AssistantNotifier extends Notifier<AssistantState> {
     var explanations = results.map(_template).toList();
     if (usedAi &&
         results.isNotEmpty &&
-        (q.intent == QueryIntent.findActivity || q.intent == QueryIntent.findEquipment)) {
+        (q.intent == QueryIntent.findActivity ||
+            q.intent == QueryIntent.findEquipment)) {
       try {
-        explanations = await ai.explainResults(
-          q,
-          [
-            for (final r in results)
-              ExplainItem(label: _label(r), facts: r.facts, score: r.score.round())
-          ],
-        );
+        explanations = await ai.explainResults(q, [
+          for (final r in results)
+            ExplainItem(
+              label: _label(r),
+              facts: r.facts,
+              score: r.score.round(),
+            ),
+        ]);
       } catch (_) {
         // keep the template explanations
       }
@@ -108,33 +118,41 @@ class AssistantNotifier extends Notifier<AssistantState> {
     String? logId;
     if (q.intent != QueryIntent.other) {
       logId = newId('log_');
-      await ref.read(logsProvider.notifier).add(RecommendationLog(
-            id: logId,
-            userId: me.id,
-            kind: 'activity',
-            query: text,
-            parsed: q.toJson(),
-            results: [
-              for (final r in results)
-                {
-                  if (r.post != null) 'postId': r.post!.id,
-                  if (r.challenge != null) 'challengeId': r.challenge!.id,
-                  'score': r.score,
-                  'factors': r.fits,
-                }
-            ],
-            createdAt: now,
-          ));
+      await ref
+          .read(logsProvider.notifier)
+          .add(
+            RecommendationLog(
+              id: logId,
+              userId: me.id,
+              kind: 'activity',
+              query: text,
+              parsed: q.toJson(),
+              results: [
+                for (final r in results)
+                  {
+                    if (r.post != null) 'postId': r.post!.id,
+                    if (r.challenge != null) 'challengeId': r.challenge!.id,
+                    'score': r.score,
+                    'factors': r.fits,
+                  },
+              ],
+              createdAt: now,
+            ),
+          );
     }
 
     final reply = AssistantMessage(
       fromUser: false,
       text: _intro(q, results.length),
       results: [
-        for (var i = 0; i < results.length; i++) AssistantResult(results[i], explanations[i])
+        for (var i = 0; i < results.length; i++)
+          AssistantResult(results[i], explanations[i]),
       ],
       logId: logId,
       note: note,
+      requestItem: q.intent == QueryIntent.findEquipment && results.isEmpty
+          ? (q.equipmentItem ?? '')
+          : null,
       at: DateTime.now(),
     );
     state = AssistantState(messages: [...state.messages, reply], busy: false);
@@ -153,10 +171,12 @@ class AssistantNotifier extends Notifier<AssistantState> {
       case QueryIntent.findActivity:
         return count == 0
             ? 'I could not find a meetup that fits. Try another day or time, or start your own with the ＋ button.'
-            : (count == 1 ? 'I found one good match:' : 'Here are your top $count matches:');
+            : (count == 1
+                  ? 'I found one good match:'
+                  : 'Here are your top $count matches:');
       case QueryIntent.findEquipment:
         return count == 0
-            ? 'Nobody is lending that right now. You could ask in a post or check back soon.'
+            ? 'Nobody is lending that right now. You can ask your neighbours with a request.'
             : 'These neighbours can lend it:';
       case QueryIntent.challengeInfo:
         return count == 0
@@ -169,5 +189,6 @@ class AssistantNotifier extends Notifier<AssistantState> {
   }
 }
 
-final assistantProvider =
-    NotifierProvider<AssistantNotifier, AssistantState>(AssistantNotifier.new);
+final assistantProvider = NotifierProvider<AssistantNotifier, AssistantState>(
+  AssistantNotifier.new,
+);
