@@ -115,174 +115,241 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: GestureDetector(
-                        onTap: _logoTap,
-                        child: const AppLogo(size: 88),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'NeighbourFit',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800,
-                        color: kPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Meet your neighbours, one workout at a time.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: kMuted, fontSize: 16),
-                    ),
-                    const SizedBox(height: 28),
-                    Text(
-                      _signup ? 'Create your account' : 'Welcome back',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      autofillHints: const [AutofillHints.email],
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.mail_outline),
-                      ),
-                      validator: (v) =>
-                          (v == null || !_emailRe.hasMatch(v.trim()))
-                          ? 'Enter a valid email address'
-                          : null,
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _password,
-                      obscureText: _hide,
-                      textInputAction: _signup
-                          ? TextInputAction.next
-                          : TextInputAction.done,
-                      onFieldSubmitted: (_) => _signup ? null : _submit(),
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          tooltip: _hide ? 'Show password' : 'Hide password',
-                          icon: Icon(
-                            _hide
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                          onPressed: () => setState(() => _hide = !_hide),
-                        ),
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) {
-                          return 'Enter your password';
-                        }
-                        if (_signup && v.length < 6) {
-                          return 'Use at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    if (_signup) ...[
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _confirm,
-                        obscureText: _hide,
-                        textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm password',
-                          prefixIcon: Icon(Icons.lock_outline),
-                        ),
-                        validator: (v) => v != _password.text
-                            ? 'Passwords do not match'
-                            : null,
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
-                        controller: _code,
-                        textCapitalization: TextCapitalization.characters,
-                        textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
-                          labelText: 'Resident code',
-                          helperText:
-                              'For residents only. Ask your township office.',
-                          prefixIcon: Icon(Icons.verified_user_outlined),
-                        ),
-                        validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Enter your resident code'
-                            : null,
-                      ),
-                    ],
-                    if (_error != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Text(
-                          _error!,
-                          style: const TextStyle(
-                            color: Color(0xFFB91C1C),
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: _submit,
-                      child: Text(_signup ? 'Continue' : 'Log in'),
-                    ),
-                    if (!_signup)
-                      TextButton(
-                        onPressed: () => showSnack(
-                          'Password reset is not available in this prototype.',
-                        ),
-                        child: const Text('Forgot password?'),
-                      ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          _signup
-                              ? 'Already have an account?'
-                              : 'New to NeighbourFit?',
-                          style: const TextStyle(color: kMuted),
+                        Center(
+                          child: GestureDetector(
+                            onTap: _logoTap,
+                            child: const AppLogo(size: 88),
+                          ),
                         ),
-                        TextButton(
-                          onPressed: () => _switchMode(!_signup),
-                          child: Text(_signup ? 'Log in' : 'Sign up'),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'NeighbourFit',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: kPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Meet your neighbours, one workout at a time.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: kMuted, fontSize: 16),
+                        ),
+                        const SizedBox(height: 28),
+                        Text(
+                          _signup ? 'Create your account' : 'Welcome back',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _email,
+                          keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email],
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.mail_outline),
+                          ),
+                          validator: (v) =>
+                              (v == null || !_emailRe.hasMatch(v.trim()))
+                              ? 'Enter a valid email address'
+                              : null,
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          controller: _password,
+                          obscureText: _hide,
+                          textInputAction: _signup
+                              ? TextInputAction.next
+                              : TextInputAction.done,
+                          onFieldSubmitted: (_) => _signup ? null : _submit(),
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              tooltip: _hide
+                                  ? 'Show password'
+                                  : 'Hide password',
+                              icon: Icon(
+                                _hide
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                              onPressed: () => setState(() => _hide = !_hide),
+                            ),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Enter your password';
+                            }
+                            if (_signup && v.length < 6) {
+                              return 'Use at least 6 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        if (_signup) ...[
+                          const SizedBox(height: 14),
+                          TextFormField(
+                            controller: _confirm,
+                            obscureText: _hide,
+                            textInputAction: TextInputAction.next,
+                            decoration: const InputDecoration(
+                              labelText: 'Confirm password',
+                              prefixIcon: Icon(Icons.lock_outline),
+                            ),
+                            validator: (v) => v != _password.text
+                                ? 'Passwords do not match'
+                                : null,
+                          ),
+                          const SizedBox(height: 14),
+                          TextFormField(
+                            controller: _code,
+                            textCapitalization: TextCapitalization.characters,
+                            textInputAction: TextInputAction.done,
+                            decoration: const InputDecoration(
+                              labelText: 'Resident code',
+                              helperText:
+                                  'For residents only. Ask your township office.',
+                              prefixIcon: Icon(Icons.verified_user_outlined),
+                            ),
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Enter your resident code'
+                                : null,
+                          ),
+                        ],
+                        if (_error != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Text(
+                              _error!,
+                              style: const TextStyle(
+                                color: Color(0xFFB91C1C),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+                        FilledButton(
+                          onPressed: _submit,
+                          child: Text(_signup ? 'Continue' : 'Log in'),
+                        ),
+                        if (!_signup)
+                          TextButton(
+                            onPressed: () => showSnack(
+                              'Password reset is not available in this prototype.',
+                            ),
+                            child: const Text('Forgot password?'),
+                          ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _signup
+                                  ? 'Already have an account?'
+                                  : 'New to NeighbourFit?',
+                              style: const TextStyle(color: kMuted),
+                            ),
+                            TextButton(
+                              onPressed: () => _switchMode(!_signup),
+                              child: Text(_signup ? 'Log in' : 'Sign up'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Prototype: accounts are stored on this device only.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: kMuted, fontSize: 12),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Prototype: accounts are stored on this device only.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: kMuted, fontSize: 12),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+            Positioned(
+              top: 8,
+              right: 12,
+              child: _JudgesHint(onTap: () => showPresetAccounts(context, ref)),
+            ),
+          ],
         ),
       ),
     );
   }
+}
+
+/// Top-right "Judges, start here!" pill with a yellow "?" circle. Opens the
+/// demo account list so nobody has to find the hidden five-tap entrance.
+class _JudgesHint extends StatelessWidget {
+  const _JudgesHint({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: 'Judges, start here',
+    child: Material(
+      color: kAccentSoft,
+      borderRadius: BorderRadius.circular(24),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 4, 4, 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Judges, start here!',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: kAccentDark,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  color: kAccent,
+                  shape: BoxShape.circle,
+                ),
+                child: const Text(
+                  '?',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: kText,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }

@@ -38,7 +38,7 @@ Future<void> showPresetAccounts(BuildContext context, WidgetRef ref) {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Preset accounts',
+                      'Demo accounts',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -51,7 +51,7 @@ Future<void> showPresetAccounts(BuildContext context, WidgetRef ref) {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'For the team. Sign in without a password.',
+                      'Pick a resident to explore the app. No password needed.',
                       style: TextStyle(color: kMuted),
                     ),
                   ),
