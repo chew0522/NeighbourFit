@@ -69,5 +69,5 @@ The live version is hosted at https://neighbourfit-24d3c.web.app/.
 |---|---|---|
 | Chai Shun Ying | [LinkedIn](https://www.linkedin.com/in/chai-shun-ying) | [@ChaiShunYing](https://github.com/ChaiShunYing) |
 | Ng Yu Hui | [LinkedIn](https://www.linkedin.com/in/yyyuhuing) | [@yuhuing](https://github.com/yuhuing) |
-| Sio Zixin | [LinkedIn](https://www.linkedin.com/in/zixin-sio-7a526524a/) | [@Siozixin](https://github.com/Siozixin) |
+| Sio Zixin | [LinkedIn](https://www.linkedin.com/in/zixin-sio-7a526524a) | [@Siozixin](https://github.com/Siozixin) |
 | Desmond Chew Boon Cong | [LinkedIn](https://www.linkedin.com/in/desmond-chew-915256306) | [@chew0522](https://github.com/chew0522) |
