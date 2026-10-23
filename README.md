@@ -11,6 +11,13 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.35-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter 3.35">
+  <img src="https://img.shields.io/badge/AI-DeepSeek-4D6BFE?style=for-the-badge&logo=deepseek&logoColor=white" alt="AI: DeepSeek">
+  <img src="https://img.shields.io/badge/Hosting-Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Hosting: Firebase">
+  <img src="https://img.shields.io/badge/State-Riverpod-0B8FD9?style=for-the-badge" alt="State: Riverpod">
+</p>
+
+<p align="center">
   <a href="https://neighbourfit-24d3c.web.app/"><b>▶ Try the live prototype</b></a>
 </p>
 
